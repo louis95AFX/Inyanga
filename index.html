@@ -379,503 +379,509 @@ footer{padding:24px;text-align:center;color:var(--muted)}
     </div>
   </div>
 
-<script>
+  <script>
   
-  // --- Cart Data Structure ---
-  let CART = {}; // Your main cart object (key = product ID, value = {product details + qty})
-  let CURRENT_MODAL = null;
-  const checkoutModal = document.getElementById('checkoutModal');
-
-  // --- Sample product data with multiple images ---
-  const PRODUCTS = [
-    {
-      id: 9,
-      title: 'Asthma Relief & Cure Drink',
-      price: 3500.00, // Ensure price is a number
-      images: ['1.png','2.png','3.png','4.png','5.png','6.png'],
-      description: `Breathe Easy, Live Free
-Say goodbye to asthma attacks and hello to a life of freedom! Our Asthma Relief & Cure Drink is a natural, effective solution designed to help manage and reduce asthma symptoms. With a simple 2-spoon dose, taken twice daily, you can take control of your respiratory health.
-Key Benefits:
-- Helps treat and reduce asthma attacks
-- Reduces frequency and severity of attacks
-- Made from natural ingredients, free from harsh chemicals
-- Easy to use: just 2 spoons morning and evening
-Directions:
-Take 2 spoons in the morning and 2 spoons in the evening daily.
-Order now and start breathing easier!
-Disclaimer: Before using this product, consult your healthcare professional, especially if you are already taking medication for asthma.`
-    }
-    ,
-{
-  id: 10,
-  title: 'Bring Back Lost Lover Candle',
-  price: 600,
-  images: ['9.png'],
-  description: `Bring Back Lost Lover Candle – Rekindle Love & Restore Connection
-
-Reconnect with the one who has drifted away. The Bring Back Lost Lover Candle is crafted for those seeking to revive lost love, restore communication, and draw a partner back with intention and spiritual guidance.
-
-Light this candle during your evening ritual to channel clarity, emotion, and attraction toward the person you wish to reconnect with.
-
-How to Use:
-- Light the candle at 8 PM
-- Focus your energy and intention
-- Call out your lover’s name, inviting them to return
-- Allow the flame to guide your thoughts, emotions, and the path back to one another
-
-Why Customers Love It:
-✔ Powerful attraction and reconciliation ritual
-✔ Simple and clear instructions
-✔ Designed for love, healing, and restored connection
-✔ Ideal for anyone seeking emotional reunion
-
-Bring your heart’s desire closer and open the door to renewed love with the Bring Back Lost Lover Candle. Perfect for personal use or as a thoughtful spiritual gift.`
-},
-{
-  id: 11,
-  title: 'Ikhandlela Lesibongo – Ancestral Identity & Lineage Guidance Candle',
-  price: 70,
-  images: ['10.png'],
-  description: `Reconnect with your roots and open the path to ancestral clarity with Ikhandlela Lesibongo, a traditional-inspired candle created for those seeking guidance about their true surname or family lineage.
-
-This candle is used as a spiritual tool for intention-setting, reflection, and connecting with ancestral energy. Many people light Ikhandlela Lesibongo during prayer or meditation to ask for direction, clarity, and guidance on understanding their heritage. As the candle burns, it symbolizes illumination—shedding light on the path toward discovering one’s identity.
-
-Purpose & Benefits:
-- Supports spiritual alignment when seeking ancestral guidance
-- Helps create a focused, reflective environment for exploring family roots
-- Symbolizes clarity, identity, and direction
-- Ideal for rituals, quiet reflection, and intention-setting
-
-Traditional Use:
-Light the candle, make a small incision and take a small drop of your blood and apply it onto the burning candle and speak your intentions, prayers, or questions aloud—focusing on your desire to understand your true surname and ancestral lineage. Many use personal items, written intentions, or quiet meditation to deepen the connection.
-
-Perfect for:
-Individuals exploring their heritage, seeking spiritual direction, or honoring their ancestral journey.
-
-Let Ikhandlela Lesibongo guide your steps toward understanding who you are, where you come from, and the lineage that walks beside you.`
-},
-{
-  id: 12,
-  title: 'Ikhandlela Lomsebenzi – Career Guidance & Opportunity Candle',
-  price: 70,
-  images: ['11.png'],
-  description: `Ikhandlela Lomsebenzi – Career Guidance & Opportunity Candle
-
-Step confidently into your career journey with Ikhandlela Lomsebenzi, a traditional-inspired candle used by many job seekers to focus their intentions, strengthen motivation, and attract positive opportunities.
-
-This candle is crafted for those seeking clarity, confidence, and spiritual alignment while preparing for job applications or interviews. Pairing the candle with your CV during prayer or intention-setting is believed to help focus your energy and mindset toward success.
-
-Purpose & Benefits:
-- Supports intention-setting for career growth and opportunity
-- Encourages confidence, clarity, and readiness during job seeking
-- Helps create a calm, focused atmosphere when preparing applications
-- Symbolically aligns your energy with new beginnings and professional progress
-
-Traditional Use:
-Hold or place your CV beside the burning candle while speaking your intentions, prayers, or affirmations. This ritual is believed to deepen focus and spiritually prepare you for the opportunities ahead.
-
-Perfect for:
-Job seekers, students entering the workforce, career changers, and anyone seeking spiritual support during their professional journey.
-
-Light Ikhandlela Lomsebenzi as you prepare, apply, and take steps toward the future you want — with purpose, clarity, and confidence.`
-},
-{
-  id: 13,
-  title: 'Ikhandlela Lempi – Candle of Protection, Strength & Spiritual Warfare',
-  price: 70,
-  images: ['12.png'],
-  description: `Ikhandlela Lempi – Candle of Protection, Strength & Spiritual Warfare
-
-Step into your spiritual power with Ikhandlela Lempi, a traditional-inspired candle known for its symbolic use in protection, strength, and overcoming challenges.
-
-In many cultural practices, sand, prayer, and spoken intentions are used to activate a candle’s purpose. With Ikhandlela Lempi, these rituals represent calling on spiritual guidance, reinforcing your inner strength, and asking for protection from negative energies and life obstacles.
-
-When lit, this candle serves as a powerful reminder that you are safeguarded, supported, and spiritually fortified in every battle you face.
-
-Purpose & Benefits:
-- Symbolizes protection from negativity and harmful energies
-- Supports spiritual clarity and personal empowerment
-- Helps you set strong intentions for resilience and courage
-- Perfect for rituals, prayer, meditation, and grounding practices
-
-How it’s traditionally used:
-Sprinkling graveyard sand, speaking intentions, or praying over the flame is believed to strengthen its spiritual symbolism and deepen your connection to your protective energy.
-
-Perfect for:
-Those seeking spiritual shielding, emotional strength, and a sense of empowerment in challenging times.`
-},
-{
-  id: 14,
-  title: 'Ikhandlela Eliletha Imfudumalo Ekhaya – Warmth & Harmony Candle',
-  price: 70,
-  images: ['13.png'],
-  description: `Ikhandlela Eliletha Imfudumalo Ekhaya – Warmth & Harmony Candle
-
-Bring harmony, warmth, and unity into your home with Ikhandlela eliletha imfudumalo ekhaya — a traditional-inspired candle crafted to promote peace and togetherness within the family.
-
-This soothing candle is designed to create a calming atmosphere, helping reduce tensions and encouraging open hearts and gentle communication. Light it during family gatherings, prayer sessions, or quiet evenings to invite a sense of comfort, understanding, and emotional warmth into your living space.
-
-Benefits:
-- Encourages peace and harmony within the home
-- Helps ease family disagreements and emotional tension
-- Creates a warm, comforting atmosphere
-- Supports unity, bonding, and connection
-
-Perfect for:
-Homes, spiritual spaces, moments of reflection, or anyone seeking a peaceful, united environment.
-
-Bring warmth. Bring unity. Bring peace — with Ikhandlela eliletha imfudumalo ekhaya.`
-},
-{
-  id: 15,
-  title: 'Drop Cure Herbal Remedy',
-  price: 400,
-  images: ['14.png','15.png','16.png','17.png'],
-  description: 'Find relief from various ailments with our Drop Cure Herbal Remedy. This natural solution is designed to promote overall well-being.\n\nDirections:\n1. Boil 1 Drop Cure unit in 2 liters of water for 20 minutes.\n2. Strain and drink the solution.\n\nOrder Now and experience the benefits of natural healing!'
-},
-{
-  id: 16,
-  title: 'Fresh Breath Solution',
-  price: 600,
-  images: ['18.png', '19.png', '20.png'],
-  description: 'Eliminate Bad Breath from the Inside Out.\n\nSay goodbye to bad breath with our Fresh Breath Solution — a powerful internal cleansing formula designed to:\n- Eliminate bad breath for long-lasting freshness\n- Kill odor-causing bacteria\n- Boost confidence in your daily interactions\n\nDirections:\n- Adults & children over 5: Take one pill before eating in the morning and at night.\n- Not recommended for children under 5 years.\n\nOrder Now and enjoy fresh breath all day!\n\nDisclaimer: Consult a healthcare professional before using this product, especially if you have underlying medical conditions or are taking medications.'
-},
-{
-  id: 17,
-  title: 'Ibaso Customer Attraction',
-  price: 200,
-  images: ['21.png', '22.png'],
-  description: 'Boost Your Business with Powerful Attraction.\n\nStruggling to draw customers to your business? Our Ibaso Customer Attraction solution is traditionally used to:\n- Draw in customers and clients\n- Increase foot traffic and improve sales\n- Strengthen business visibility and reputation\n\nHow to Use:\n1. Burn Ibaso in the morning and evening using charcoal.\n2. Speak your intentions clearly, focusing on your business goals.\n3. Place it in your business area to attract positive, prosperous energy.\n\nOrder Now and start attracting more customers today!'
-},
-{
-  id: 18,
-  title: 'Icala Lidliwe Inja',
-  price: 18000,
-  images: ['23.png', '24.png'],
-  description: 'Icala Lidliwe Yinja – Case Clearing & Spiritual Cleansing Ritual.\n\nRelease yourself from legal, workplace, or administrative burdens with this powerful traditional treatment believed to help dissolve blockages, clear pending cases, and restore peace.\n\nThis ritual is used to:\n- Clear pending cases or hearings\n- Remove false accusations\n- Restore innocence and protection\n- Bring spiritual peace and resolution\n\nDirections:\n1. Use a fresh steak and pour the herbs over it.\n2. Bathe using the herb-soaked steak along with water.\n3. Do not dry yourself afterward.\n4. Give the steak to a dog to eat.\n\nRepeat as instructed until your challenges are believed to disappear.\n\nOrder now and restore peace, clarity, and freedom.'
-},
-{
-  id: 19,
-  title: 'Ihlo Lonwabu - Secret Revealer',
-  price: 11000,
-  images: ['25.png', '26.png'],
-  description: 'Ihlo Lonwabu – The Secret Revealer.\n\nUncover hidden truths and gain spiritual clarity with this powerful traditional remedy used to reveal secrets, expose deception, and bring hidden matters to light.\n\nBenefits:\n- Reveals secrets kept from you, including infidelity and hidden intentions\n- Helps you see what cannot be seen with the ordinary eye\n- Provides clarity and insight through dreams\n\nDirections:\n1. Blow herbs under your bed and pillowcase.\n2. Speak to the herbs, asking them to reveal the secrets you seek.\n3. Use before sleeping.\n4. The secrets are believed to reveal themselves in your dreams.\n\nOrder now and gain the clarity you deserve!'
-},
-{
-  id: 20,
-  title: 'Incwadi Emnandi',
-  price: 600,
-  images: ['27.png', '28.png', '29.png', '30.png'],
-  description: 'Incwadi Emnandi – For Job Seekers & Varsity Applicants.\n\nStep confidently into your future with this powerful remedy designed to help job applications, CVs, and university submissions receive favor and positive consideration.\n\nBenefits:\n- Helps your CV or application be accepted\n- Ensures your submission stands out\n- Attracts favor from recruiters or admissions officers\n\nDirections:\n1. Handwrite your CV or application letter.\n2. Sprinkle the herbs onto the papers.\n3. Speak to the herbs, asking them to favor your application.\n4. Rub the herbs onto the papers.\n5. Submit your application online or in person.\n\nOrder now and open the door to new opportunities!'
-},
-{
-  id: 21,
-  title: 'Intombemhlope',
-  price: 8000,
-  images: ['31.png'],
-  description: 'Intombemhlope – Traditional Purification & Blessing Ritual Herbs.\n\nIntombemhlope is a sacred herbal blend designed for deep spiritual purification, renewal, and personal upliftment. This traditional remedy helps cleanse unwanted energies, open your path, and prepare you for blessings, confidence, and spiritual alignment.\n\nBenefits:\n- Supports deep spiritual cleansing\n- Removes heavy or unwanted energies\n- Promotes clarity, renewal, and alignment\n- Prepares you for blessings, attraction, and open paths\n- Strengthens personal aura and spiritual light\n\nTraditional Usage (4-Day Ritual):\nDay 1 to Day 4:\n1. Steam with the herbs each morning for 15 minutes\n2. Throw up using a 5-litre bucket as part of the cleansing process\n3. Bathe with the herbs using cold water\n4. Face the Mpumalanga direction (where the sun rises) during the ritual\n\nAfter completing the 4-day process, you are spiritually cleansed and ready to wear Intombemhlope.\n\nPerfect For: Anyone seeking a traditional, powerful cleansing method to refresh their spiritual journey and invite positivity into their life.'
-},
-{
-  id: 22,
-  title: 'Intsipho Yokukhipha Isichitho',
-  price: 120,
-  images: ['32.png'],
-  description: 'Intsipho Yokukhipha Isichitho – Spiritual Cleansing & Attraction Soap.\n\nStep into a brighter, lighter, and luck-filled path with Intsipho Yokukhipha Isichitho. This traditional cleansing soap is designed to help remove bad luck, misfortune, and negative energy, allowing your inner glow to shine through.\n\nWhen used consistently, it is believed to uplift your aura, enhance your presence, and help you feel more loved, appreciated, and welcomed by those around you.\n\nWhat This Soap Is Used For:\n- Clearing away bad luck and misfortune\n- Removing darkness and unwanted negative energy\n- Enhancing spiritual glow, confidence, and inner harmony\n- Supporting a more positive, love-filled atmosphere in your life\n\nHow to Use:\n- Use this soap during your bath or shower as part of your cleansing routine.\n- For best results, use regularly with intention.\n\nWhy Customers Love It:\n- Gentle on the skin\n- Traditionally used for spiritual cleansing\n- Helps promote emotional warmth and positivity\n- Ideal for anyone feeling weighed down or seeking fresh energy'
-},
-{
-  id: 23,
-  title: 'Isbambelelo',
-  price: 500,
-  images: ['33.png','34.png','35.png','36.png','37.png'],
-  description: 'Isbambelelo – For Your Partner to Hold Onto You Forever.\n\nSay goodbye to separation fears with our mystical Isbambelelo. This powerful remedy is designed to:\n- Make your partner feel a strong attachment and never want to leave\n- Enhance the bond and intimacy between you\n- Create a lasting connection\n\nDirections:\n- Rub the remedy on your private area.\n- Make a small incision on your chest and shoulder.\n- Rub the remedy on the incision sites.\n- During intercourse, your partner will feel an unbreakable attachment and never leave you.\n\nOrder Now and strengthen your relationship naturally!'
-},
-{
-  id: 24,
-  title: 'Isdliso',
-  price: 500,
-  images: ['38.png'],
-  description: 'Isdliso – Spiritual Manipulation & Influence Remedy.\n\nWarning: This product involves traditional rituals intended for advanced spiritual purposes. Use responsibly and with full understanding of the cultural and spiritual context.\n\nHow It Works:\nIsdliso is designed for influencing and controlling specific outcomes through ritualistic application.\n\nDirections:\n- Make a small incision next to your private part.\n- Mix this with your nails, hair, bodily discharge, and urine first thing in the morning.\n- Take ear wax and ensure all components are prepared correctly.\n- Pour the mixture into the intended person’s meal carefully.\n\nNote: This is an advanced traditional remedy and should be used with caution and respect for the spiritual practices involved.'
-},
-{
-  id: 25,
-  title: 'Job Promotion Ritual',
-  price: 8000,
-  images: ['39.png','40.png','41.png'],
-  description: 'Job Promotion Ritual – Unlock Career Advancement.\n\nBoost your career prospects and attract new professional opportunities with our Job Promotion Ritual Kit. This traditional remedy is designed to enhance confidence, charisma, and overall career growth.\n\nBenefits:\n- Increases confidence and personal magnetism\n- Attracts new opportunities, recognition, and success\n- Supports career advancement and professional growth\n\nHow to Use:\n1. Steam, bathe, and purge with the remedy for 3 consecutive days.\n2. Complete the entire ritual for best results.\n3. On day 4, apply the contents of the small bottle to your eyebrows to finalize the ritual.\n\nNote: For optimal results, follow the ritual carefully and consistently.\n\nOrder Now and take the first step toward achieving your career goals!'
-}
-  ];
-
-  // --- Utility Functions ---
-
-  function findProduct(id) {
-    return PRODUCTS.find(p => p.id === id);
-  }
-
-  function getCartSubtotal() {
-    return Object.values(CART).reduce((sum, item) => sum + item.price * item.qty, 0);
-  }
-
-  // --- Product Catalog Functions ---
-
-  function renderProducts(){
-    const grid = document.getElementById('grid');
-    grid.innerHTML='';
-    let products = [...PRODUCTS];
-    const sort = document.getElementById('sort').value;
-    if(sort==='priceLow') products.sort((a,b)=>a.price-b.price);
-    if(sort==='priceHigh') products.sort((a,b)=>b.price-a.price);
-    if(sort==='alpha') products.sort((a,b)=>a.title.localeCompare(b.title));
-    document.getElementById('count').innerText = products.length;
-
-    products.forEach((p)=>{
-      const el = document.createElement('div'); 
-      el.className='card';
-      el.innerHTML = `
-        <img src="${p.images[0]}" alt="${p.title}" loading="lazy" />
-        <h3>${p.title}</h3>
-        <div style="color:var(--muted);font-size:13px">SKU: ${p.id}</div>
-        <div class="meta">
-          <div class="price">R ${p.price.toFixed(2)}</div>
-          <button class="add" onclick="addToCart(${p.id}); event.stopPropagation();">Add to Cart</button>
-        </div>
-      `;
-      el.onclick = ()=> openProductModal(p); 
-      grid.appendChild(el);
-    });
-    updateCart();
-  }
-
-  function doSearch(){ 
-    const q=document.getElementById('q').value.toLowerCase(); 
-    const filtered = PRODUCTS.filter(p=>p.title.toLowerCase().includes(q)); 
-    const grid=document.getElementById('grid'); grid.innerHTML='';
-    filtered.forEach(p=>{
-      const el=document.createElement('div');
-      el.className='card';
-      el.innerHTML=`<img src="${p.images[0]}"/><h3>${p.title}</h3><div class="price">R ${p.price.toFixed(2)}</div>`;
-      el.onclick=()=>openProductModal(p); 
-      grid.appendChild(el);
-    });
-    document.getElementById('count').innerText=filtered.length;
-  }
-
-  // --- Product Detail Modal Functions ---
-
-  function openProductModal(product){
-    CURRENT_MODAL = product;
-    document.getElementById('pmImg').src = product.images[0];
-    document.getElementById('pmTitle').innerText = product.title;
-    document.getElementById('pmPrice').innerText = 'R '+product.price.toFixed(2);
-    document.getElementById('pmDesc').innerText = product.description || 'No description available.';
-
-    const thumbs = document.getElementById('pmThumbs'); 
-    thumbs.innerHTML='';
-    product.images.forEach(img=>{
-      const t = document.createElement('img');
-      t.src=img;
-      t.style.width='70px';
-      t.style.height='70px';
-      t.style.objectFit='cover';
-      t.style.borderRadius='8px';
-      t.style.cursor='pointer';
-      t.onclick=()=>document.getElementById('pmImg').src=img;
-      thumbs.appendChild(t);
-    });
-
-    document.getElementById('productModal').classList.remove('hidden');
-  }
-
-  function closeProductModal(){
-    document.getElementById('productModal').classList.add('hidden');
-  }
-  
-  function addModalItem(){ 
-    if(CURRENT_MODAL) addToCart(CURRENT_MODAL.id); 
-    closeProductModal(); 
-  }
-
-  // --- Cart Functions ---
-
-  function addToCart(id){
-    const product = findProduct(id);
-    if(!product) return;
-    if(!CART[id]) CART[id]={...product,qty:0};
-    CART[id].qty += 1;
-    updateCart();
-    openCart(); 
-  }
-
-  function updateCart(){
-    const list = document.getElementById('cartList');
-    list.innerHTML = '';
-    let total = 0;
-
-    Object.values(CART).forEach(item => {
-      total += item.price * item.qty;
-
-      const row = document.createElement('div'); 
-      row.className = 'cart-item';
-      row.innerHTML = `
-        <img src="${item.images[0]}" style="width:56px;height:56px;border-radius:8px;object-fit:cover" />
-        <div style="flex:1;margin-left:8px;display:flex;flex-direction:column;gap:4px">
-          <div style="font-size:14px;font-weight:500">${item.title}</div>
-          <div style="font-size:13px;color:var(--muted)">R ${item.price.toFixed(2)}</div>
-          <div style="display:flex;gap:4px;align-items:center">
-            <button onclick="decreaseQty(${item.id})" style="background:#2a3440;border:none;color:white;padding:2px 8px;border-radius:6px;cursor:pointer;">-</button>
-            <span>${item.qty}</span>
-            <button onclick="increaseQty(${item.id})" style="background:#2a3440;border:none;color:white;padding:2px 8px;border-radius:6px;cursor:pointer;">+</button>
-            <button onclick="deleteItem(${item.id})" style="margin-left:8px;background:var(--accent);color:white;border:none;padding:2px 6px;border-radius:6px;cursor:pointer;font-size:12px">Delete</button>
-          </div>
-        </div>
-        <div style="font-weight:700;color:var(--accent-2)">R ${(item.price*item.qty).toFixed(2)}</div>
-      `;
-
-      list.appendChild(row);
-    });
-
-    document.getElementById('totalAmt').innerText = 'R ' + total.toFixed(2);
-    const count = Object.values(CART).reduce((s,i)=>s+i.qty,0);
-    const cartCountElem = document.getElementById('cartCount');
-    cartCountElem.innerText = count;
-    cartCountElem.style.display = count ? 'inline-block' : 'none';
-  }
-
-  function deleteItem(id){
-    delete CART[id];
-    updateCart();
-  }
-
-  function increaseQty(id){ CART[id].qty+=1; updateCart(); }
-  function decreaseQty(id){ 
-    if(CART[id].qty>1){ CART[id].qty-=1; } 
-    else { delete CART[id]; } 
-    updateCart(); 
-  }
-
-  function toggleCart(){ document.getElementById('drawer').classList.toggle('open'); }
-  function openCart(){ document.getElementById('drawer').classList.add('open'); }
-
-
-  // --- Checkout Modal Functions (FIXED) ---
-
-  function checkout() {
-    const itemCount = Object.keys(CART).length;
+    // --- Cart Data Structure ---
+    let CART = {}; // Your main cart object (key = product ID, value = {product details + qty})
+    let CURRENT_MODAL = null;
+    const checkoutModal = document.getElementById('checkoutModal');
     
-    if (itemCount === 0) {
-        alert("Your cart is empty! Please add some items before checking out.");
-        return;
-    }
+    // --- Global DOM Elements ---
+    const checkoutForm = document.getElementById('checkoutForm');
+    const modalTotalAmt = document.getElementById('modalTotalAmt');
     
-    openCheckoutModal();
-    
-    document.querySelectorAll('input[name="deliveryMethod"]').forEach(radio => radio.checked = false);
-    
-    updateModalTotal(0); 
-  }
-
-  function openCheckoutModal() {
-    checkoutModal.style.display = 'block';
-    
-    const subTotal = getCartSubtotal();
-    
-    checkoutModal.dataset.subtotal = subTotal.toFixed(2); 
-    
-    document.getElementById('modalTotalAmt').textContent = `R ${subTotal.toFixed(2)}`;
-  }
-
-  function closeCheckoutModal() {
-    checkoutModal.style.display = 'none';
-  }
-
-  function updateModalTotal(deliveryFee) {
-    const subTotal = parseFloat(checkoutModal.dataset.subtotal || 0); 
-    const totalWithDelivery = subTotal + deliveryFee;
-    const totalElement = document.getElementById('modalTotalAmt');
-    
-    totalElement.textContent = `R ${totalWithDelivery.toFixed(2)}`;
-  }
-
-  // --- Event Listeners ---
-
-  // Close the modal if the user clicks anywhere outside of it
-  window.onclick = function(event) {
-    if (event.target == checkoutModal) {
-      closeCheckoutModal(); 
-    }
-  }
-  
-  document.addEventListener('DOMContentLoaded', () => {
-    // Set up delivery radio button change listeners
+    // --- Event Listener Fix: Declare deliveryRadios ONCE in the script scope ---
     const deliveryRadios = document.querySelectorAll('input[name="deliveryMethod"]');
     
-    deliveryRadios.forEach(radio => {
-      radio.addEventListener('change', (event) => {
-        const deliveryPrice = parseFloat(event.target.dataset.price);
-        updateModalTotal(deliveryPrice);
-      });
-    });
-
-
-
-    // Modal Elements
-const checkoutForm = document.getElementById('checkoutForm');
-const modalTotalAmt = document.getElementById('modalTotalAmt');
-
-// Example cart total (sum of products in cart) – update dynamically
-let cartTotal = 500; // Example: R500
-let deliveryPrice = 200; // Default delivery
-
-// Update total when delivery method changes
-deliveryRadios.forEach(radio => {
-  radio.addEventListener('change', (e) => {
-    deliveryPrice = parseFloat(e.target.dataset.price);
-    updateModalTotal();
-  });
-});
-
-function updateModalTotal(){
-  const total = cartTotal + deliveryPrice;
-  modalTotalAmt.textContent = `R ${total.toFixed(2)}`;
-}
-
-// Initialize modal total on load
-updateModalTotal();
-
-// Yoco Checkout
-checkoutForm.addEventListener('submit', function(e){
-  closeCheckoutModal()
-  e.preventDefault();
-
-  const totalAmount = (cartTotal + deliveryPrice) * 100; // Yoco expects cents
-  const customerName = document.getElementById('name').value + " " + document.getElementById('surname').value;
-  const customerEmail = document.getElementById('email').value;
-
-  // Create Yoco SDK instance
-  const yoco = new YocoSDK({
-    publicKey: 'YOUR_YOCO_PUBLIC_KEY' // Replace with your Yoco public key
-  });
-
-  yoco.showPopup({
-    amountInCents: totalAmount,
-    currency: 'ZAR',
-    name: 'Order Payment',
-    description: 'Payment for your order',
-    email: customerEmail,
-    onSuccess: function(result) {
-      alert('Payment Successful! Payment ID: ' + result.id);
-      // Here you can call your backend to save order details and confirm payment
-      closeCheckoutModal();
-    },
-    onError: function(error) {
-      alert('Payment failed: ' + error.message);
-    }
-  });
-});
-
-  });
   
-  // Initial render
-  renderProducts();
-</script>
-</body>
-</html>
+    // --- Sample product data with multiple images ---
+    const PRODUCTS = [
+      {
+        id: 9,
+        title: 'Asthma Relief & Cure Drink',
+        price: 3500.00, // Ensure price is a number
+        images: ['1.png','2.png','3.png','4.png','5.png','6.png'],
+        description: `Breathe Easy, Live Free
+  Say goodbye to asthma attacks and hello to a life of freedom! Our Asthma Relief & Cure Drink is a natural, effective solution designed to help manage and reduce asthma symptoms. With a simple 2-spoon dose, taken twice daily, you can take control of your respiratory health.
+  Key Benefits:
+  - Helps treat and reduce asthma attacks
+  - Reduces frequency and severity of attacks
+  - Made from natural ingredients, free from harsh chemicals
+  - Easy to use: just 2 spoons morning and evening
+  Directions:
+  Take 2 spoons in the morning and 2 spoons in the evening daily.
+  Order now and start breathing easier!
+  Disclaimer: Before using this product, consult your healthcare professional, especially if you are already taking medication for asthma.`
+      }
+      ,
+  {
+    id: 10,
+    title: 'Bring Back Lost Lover Candle',
+    price: 600,
+    images: ['9.png'],
+    description: `Bring Back Lost Lover Candle – Rekindle Love & Restore Connection
+  
+  Reconnect with the one who has drifted away. The Bring Back Lost Lover Candle is crafted for those seeking to revive lost love, restore communication, and draw a partner back with intention and spiritual guidance.
+  
+  Light this candle during your evening ritual to channel clarity, emotion, and attraction toward the person you wish to reconnect with.
+  
+  How to Use:
+  - Light the candle at 8 PM
+  - Focus your energy and intention
+  - Call out your lover’s name, inviting them to return
+  - Allow the flame to guide your thoughts, emotions, and the path back to one another
+  
+  Why Customers Love It:
+  ✔ Powerful attraction and reconciliation ritual
+  ✔ Simple and clear instructions
+  ✔ Designed for love, healing, and restored connection
+  ✔ Ideal for anyone seeking emotional reunion
+  
+  Bring your heart’s desire closer and open the door to renewed love with the Bring Back Lost Lover Candle. Perfect for personal use or as a thoughtful spiritual gift.`
+  },
+  {
+    id: 11,
+    title: 'Ikhandlela Lesibongo – Ancestral Identity & Lineage Guidance Candle',
+    price: 70,
+    images: ['10.png'],
+    description: `Reconnect with your roots and open the path to ancestral clarity with Ikhandlela Lesibongo, a traditional-inspired candle created for those seeking guidance about their true surname or family lineage.
+  
+  This candle is used as a spiritual tool for intention-setting, reflection, and connecting with ancestral energy. Many people light Ikhandlela Lesibongo during prayer or meditation to ask for direction, clarity, and guidance on understanding their heritage. As the candle burns, it symbolizes illumination—shedding light on the path toward discovering one’s identity.
+  
+  Purpose & Benefits:
+  - Supports spiritual alignment when seeking ancestral guidance
+  - Helps create a focused, reflective environment for exploring family roots
+  - Symbolizes clarity, identity, and direction
+  - Ideal for rituals, quiet reflection, and intention-setting
+  
+  Traditional Use:
+  Light the candle, make a small incision and take a small drop of your blood and apply it onto the burning candle and speak your intentions, prayers, or questions aloud—focusing on your desire to understand your true surname and ancestral lineage. Many use personal items, written intentions, or quiet meditation to deepen the connection.
+  
+  Perfect for:
+  Individuals exploring their heritage, seeking spiritual direction, or honoring their ancestral journey.
+  
+  Let Ikhandlela Lesibongo guide your steps toward understanding who you are, where you come from, and the lineage that walks beside you.`
+  },
+  {
+    id: 12,
+    title: 'Ikhandlela Lomsebenzi – Career Guidance & Opportunity Candle',
+    price: 70,
+    images: ['11.png'],
+    description: `Ikhandlela Lomsebenzi – Career Guidance & Opportunity Candle
+  
+  Step confidently into your career journey with Ikhandlela Lomsebenzi, a traditional-inspired candle used by many job seekers to focus their intentions, strengthen motivation, and attract positive opportunities.
+  
+  This candle is crafted for those seeking clarity, confidence, and spiritual alignment while preparing for job applications or interviews. Pairing the candle with your CV during prayer or intention-setting is believed to help focus your energy and mindset toward success.
+  
+  Purpose & Benefits:
+  - Supports intention-setting for career growth and opportunity
+  - Encourages confidence, clarity, and readiness during job seeking
+  - Helps create a calm, focused atmosphere when preparing applications
+  - Symbolically aligns your energy with new beginnings and professional progress
+  
+  Traditional Use:
+  Hold or place your CV beside the burning candle while speaking your intentions, prayers, or affirmations. This ritual is believed to deepen focus and spiritually prepare you for the opportunities ahead.
+  
+  Perfect for:
+  Job seekers, students entering the workforce, career changers, and anyone seeking spiritual support during their professional journey.
+  
+  Light Ikhandlela Lomsebenzi as you prepare, apply, and take steps toward the future you want — with purpose, clarity, and confidence.`
+  },
+  {
+    id: 13,
+    title: 'Ikhandlela Lempi – Candle of Protection, Strength & Spiritual Warfare',
+    price: 70,
+    images: ['12.png'],
+    description: `Ikhandlela Lempi – Candle of Protection, Strength & Spiritual Warfare
+  
+  Step into your spiritual power with Ikhandlela Lempi, a traditional-inspired candle known for its symbolic use in protection, strength, and overcoming challenges.
+  
+  In many cultural practices, sand, prayer, and spoken intentions are used to activate a candle’s purpose. With Ikhandlela Lempi, these rituals represent calling on spiritual guidance, reinforcing your inner strength, and asking for protection from negative energies and life obstacles.
+  
+  When lit, this candle serves as a powerful reminder that you are safeguarded, supported, and spiritually fortified in every battle you face.
+  
+  Purpose & Benefits:
+  - Symbolizes protection from negativity and harmful energies
+  - Supports spiritual clarity and personal empowerment
+  - Helps you set strong intentions for resilience and courage
+  - Perfect for rituals, prayer, meditation, and grounding practices
+  
+  How it’s traditionally used:
+  Sprinkling graveyard sand, speaking intentions, or praying over the flame is believed to strengthen its spiritual symbolism and deepen your connection to your protective energy.
+  
+  Perfect for:
+  Those seeking spiritual shielding, emotional strength, and a sense of empowerment in challenging times.`
+  },
+  {
+    id: 14,
+    title: 'Ikhandlela Eliletha Imfudumalo Ekhaya – Warmth & Harmony Candle',
+    price: 70,
+    images: ['13.png'],
+    description: `Ikhandlela Eliletha Imfudumalo Ekhaya – Warmth & Harmony Candle
+  
+  Bring harmony, warmth, and unity into your home with Ikhandlela eliletha imfudumalo ekhaya — a traditional-inspired candle crafted to promote peace and togetherness within the family.
+  
+  This soothing candle is designed to create a calming atmosphere, helping reduce tensions and encouraging open hearts and gentle communication. Light it during family gatherings, prayer sessions, or quiet evenings to invite a sense of comfort, understanding, and emotional warmth into your living space.
+  
+  Benefits:
+  - Encourages peace and harmony within the home
+  - Helps ease family disagreements and emotional tension
+  - Creates a warm, comforting atmosphere
+  - Supports unity, bonding, and connection
+  
+  Perfect for:
+  Homes, spiritual spaces, moments of reflection, or anyone seeking a peaceful, united environment.
+  
+  Bring warmth. Bring unity. Bring peace — with Ikhandlela eliletha imfudumalo ekhaya.`
+  },
+  {
+    id: 15,
+    title: 'Drop Cure Herbal Remedy',
+    price: 400,
+    images: ['14.png','15.png','16.png','17.png'],
+    description: 'Find relief from various ailments with our Drop Cure Herbal Remedy. This natural solution is designed to promote overall well-being.\n\nDirections:\n1. Boil 1 Drop Cure unit in 2 liters of water for 20 minutes.\n2. Strain and drink the solution.\n\nOrder Now and experience the benefits of natural healing!'
+  },
+  {
+    id: 16,
+    title: 'Fresh Breath Solution',
+    price: 600,
+    images: ['18.png', '19.png', '20.png'],
+    description: 'Eliminate Bad Breath from the Inside Out.\n\nSay goodbye to bad breath with our Fresh Breath Solution — a powerful internal cleansing formula designed to:\n- Eliminate bad breath for long-lasting freshness\n- Kill odor-causing bacteria\n- Boost confidence in your daily interactions\n\nDirections:\n- Adults & children over 5: Take one pill before eating in the morning and at night.\n- Not recommended for children under 5 years.\n\nOrder Now and enjoy fresh breath all day!\n\nDisclaimer: Consult a healthcare professional before using this product, especially if you have underlying medical conditions or are taking medications.'
+  },
+  {
+    id: 17,
+    title: 'Ibaso Customer Attraction',
+    price: 200,
+    images: ['21.png', '22.png'],
+    description: 'Boost Your Business with Powerful Attraction.\n\nStruggling to draw customers to your business? Our Ibaso Customer Attraction solution is traditionally used to:\n- Draw in customers and clients\n- Increase foot traffic and improve sales\n- Strengthen business visibility and reputation\n\nHow to Use:\n1. Burn Ibaso in the morning and evening using charcoal.\n2. Speak your intentions clearly, focusing on your business goals.\n3. Place it in your business area to attract positive, prosperous energy.\n\nOrder Now and start attracting more customers today!'
+  },
+  {
+    id: 18,
+    title: 'Icala Lidliwe Inja',
+    price: 18000,
+    images: ['23.png', '24.png'],
+    description: 'Icala Lidliwe Yinja – Case Clearing & Spiritual Cleansing Ritual.\n\nRelease yourself from legal, workplace, or administrative burdens with this powerful traditional treatment believed to help dissolve blockages, clear pending cases, and restore peace.\n\nThis ritual is used to:\n- Clear pending cases or hearings\n- Remove false accusations\n- Restore innocence and protection\n- Bring spiritual peace and resolution\n\nDirections:\n1. Use a fresh steak and pour the herbs over it.\n2. Bathe using the herb-soaked steak along with water.\n3. Do not dry yourself afterward.\n4. Give the steak to a dog to eat.\n\nRepeat as instructed until your challenges are believed to disappear.\n\nOrder now and restore peace, clarity, and freedom.'
+  },
+  {
+    id: 19,
+    title: 'Ihlo Lonwabu - Secret Revealer',
+    price: 11000,
+    images: ['25.png', '26.png'],
+    description: 'Ihlo Lonwabu – The Secret Revealer.\n\nUncover hidden truths and gain spiritual clarity with this powerful traditional remedy used to reveal secrets, expose deception, and bring hidden matters to light.\n\nBenefits:\n- Reveals secrets kept from you, including infidelity and hidden intentions\n- Helps you see what cannot be seen with the ordinary eye\n- Provides clarity and insight through dreams\n\nDirections:\n1. Blow herbs under your bed and pillowcase.\n2. Speak to the herbs, asking them to reveal the secrets you seek.\n3. Use before sleeping.\n4. The secrets are believed to reveal themselves in your dreams.\n\nOrder now and gain the clarity you deserve!'
+  },
+  {
+    id: 20,
+    title: 'Incwadi Emnandi',
+    price: 600,
+    images: ['27.png', '28.png', '29.png', '30.png'],
+    description: 'Incwadi Emnandi – For Job Seekers & Varsity Applicants.\n\nStep confidently into your future with this powerful remedy designed to help job applications, CVs, and university submissions receive favor and positive consideration.\n\nBenefits:\n- Helps your CV or application be accepted\n- Ensures your submission stands out\n- Attracts favor from recruiters or admissions officers\n\nDirections:\n1. Handwrite your CV or application letter.\n2. Sprinkle the herbs onto the papers.\n3. Speak to the herbs, asking them to favor your application.\n4. Rub the herbs onto the papers.\n5. Submit your application online or in person.\n\nOrder now and open the door to new opportunities!'
+  },
+  {
+    id: 21,
+    title: 'Intombemhlope',
+    price: 8000,
+    images: ['31.png'],
+    description: 'Intombemhlope – Traditional Purification & Blessing Ritual Herbs.\n\nIntombemhlope is a sacred herbal blend designed for deep spiritual purification, renewal, and personal upliftment. This traditional remedy helps cleanse unwanted energies, open your path, and prepare you for blessings, confidence, and spiritual alignment.\n\nBenefits:\n- Supports deep spiritual cleansing\n- Removes heavy or unwanted energies\n- Promotes clarity, renewal, and alignment\n- Prepares you for blessings, attraction, and open paths\n- Strengthens personal aura and spiritual light\n\nTraditional Usage (4-Day Ritual):\nDay 1 to Day 4:\n1. Steam with the herbs each morning for 15 minutes\n2. Throw up using a 5-litre bucket as part of the cleansing process\n3. Bathe with the herbs using cold water\n4. Face the Mpumalanga direction (where the sun rises) during the ritual\n\nAfter completing the 4-day process, you are spiritually cleansed and ready to wear Intombemhlope.\n\nPerfect For: Anyone seeking a traditional, powerful cleansing method to refresh their spiritual journey and invite positivity into their life.'
+  },
+  {
+    id: 22,
+    title: 'Intsipho Yokukhipha Isichitho',
+    price: 120,
+    images: ['32.png'],
+    description: 'Intsipho Yokukhipha Isichitho – Spiritual Cleansing & Attraction Soap.\n\nStep into a brighter, lighter, and luck-filled path with Intsipho Yokukhipha Isichitho. This traditional cleansing soap is designed to help remove bad luck, misfortune, and negative energy, allowing your inner glow to shine through.\n\nWhen used consistently, it is believed to uplift your aura, enhance your presence, and help you feel more loved, appreciated, and welcomed by those around you.\n\nWhat This Soap Is Used For:\n- Clearing away bad luck and misfortune\n- Removing darkness and unwanted negative energy\n- Enhancing spiritual glow, confidence, and inner harmony\n- Supporting a more positive, love-filled atmosphere in your life\n\nHow to Use:\n- Use this soap during your bath or shower as part of your cleansing routine.\n- For best results, use regularly with intention.\n\nWhy Customers Love It:\n- Gentle on the skin\n- Traditionally used for spiritual cleansing\n- Helps promote emotional warmth and positivity\n- Ideal for anyone feeling weighed down or seeking fresh energy'
+  },
+  {
+    id: 23,
+    title: 'Isbambelelo',
+    price: 500,
+    images: ['33.png','34.png','35.png','36.png','37.png'],
+    description: 'Isbambelelo – For Your Partner to Hold Onto You Forever.\n\nSay goodbye to separation fears with our mystical Isbambelelo. This powerful remedy is designed to:\n- Make your partner feel a strong attachment and never want to leave\n- Enhance the bond and intimacy between you\n- Create a lasting connection\n\nDirections:\n- Rub the remedy on your private area.\n- Make a small incision on your chest and shoulder.\n- Rub the remedy on the incision sites.\n- During intercourse, your partner will feel an unbreakable attachment and never leave you.\n\nOrder Now and strengthen your relationship naturally!'
+  },
+  {
+    id: 24,
+    title: 'Isdliso',
+    price: 500,
+    images: ['38.png'],
+    description: 'Isdliso – Spiritual Manipulation & Influence Remedy.\n\nWarning: This product involves traditional rituals intended for advanced spiritual purposes. Use responsibly and with full understanding of the cultural and spiritual context.\n\nHow It Works:\nIsdliso is designed for influencing and controlling specific outcomes through ritualistic application.\n\nDirections:\n- Make a small incision next to your private part.\n- Mix this with your nails, hair, bodily discharge, and urine first thing in the morning.\n- Take ear wax and ensure all components are prepared correctly.\n- Pour the mixture into the intended person’s meal carefully.\n\nNote: This is an advanced traditional remedy and should be used with caution and respect for the spiritual practices involved.'
+  },
+  {
+    id: 25,
+    title: 'Job Promotion Ritual',
+    price: 8000,
+    images: ['39.png','40.png','41.png'],
+    description: 'Job Promotion Ritual – Unlock Career Advancement.\n\nBoost your career prospects and attract new professional opportunities with our Job Promotion Ritual Kit. This traditional remedy is designed to enhance confidence, charisma, and overall career growth.\n\nBenefits:\n- Increases confidence and personal magnetism\n- Attracts new opportunities, recognition, and success\n- Supports career advancement and professional growth\n\nHow to Use:\n1. Steam, bathe, and purge with the remedy for 3 consecutive days.\n2. Complete the entire ritual for best results.\n3. On day 4, apply the contents of the small bottle to your eyebrows to finalize the ritual.\n\nNote: For optimal results, follow the ritual carefully and consistently.\n\nOrder Now and take the first step toward achieving your career goals!'
+  }
+    ];
+  
+    // --- Utility Functions ---
+  
+    function findProduct(id) {
+      return PRODUCTS.find(p => p.id === id);
+    }
+  
+    function getCartSubtotal() {
+      return Object.values(CART).reduce((sum, item) => sum + item.price * item.qty, 0);
+    }
+  
+    // --- Product Catalog Functions ---
+  
+    function renderProducts(){
+      const grid = document.getElementById('grid');
+      grid.innerHTML='';
+      let products = [...PRODUCTS];
+      const sort = document.getElementById('sort').value;
+      if(sort==='priceLow') products.sort((a,b)=>a.price-b.price);
+      if(sort==='priceHigh') products.sort((a,b)=>b.price-a.price);
+      if(sort==='alpha') products.sort((a,b)=>a.title.localeCompare(b.title));
+      document.getElementById('count').innerText = products.length;
+  
+      products.forEach((p)=>{
+        const el = document.createElement('div'); 
+        el.className='card';
+        el.innerHTML = `
+          <img src="${p.images[0]}" alt="${p.title}" loading="lazy" />
+          <h3>${p.title}</h3>
+          <div style="color:var(--muted);font-size:13px">SKU: ${p.id}</div>
+          <div class="meta">
+            <div class="price">R ${p.price.toFixed(2)}</div>
+            <button class="add" onclick="addToCart(${p.id}); event.stopPropagation();">Add to Cart</button>
+          </div>
+        `;
+        el.onclick = ()=> openProductModal(p); 
+        grid.appendChild(el);
+      });
+      updateCart();
+    }
+  
+    function doSearch(){ 
+      const q=document.getElementById('q').value.toLowerCase(); 
+      const filtered = PRODUCTS.filter(p=>p.title.toLowerCase().includes(q)); 
+      const grid=document.getElementById('grid'); grid.innerHTML='';
+      filtered.forEach(p=>{
+        const el=document.createElement('div');
+        el.className='card';
+        el.innerHTML=`<img src="${p.images[0]}"/><h3>${p.title}</h3><div class="price">R ${p.price.toFixed(2)}</div>`;
+        el.onclick=()=>openProductModal(p); 
+        grid.appendChild(el);
+      });
+      document.getElementById('count').innerText=filtered.length;
+    }
+  
+    // --- Product Detail Modal Functions ---
+  
+    function openProductModal(product){
+      CURRENT_MODAL = product;
+      document.getElementById('pmImg').src = product.images[0];
+      document.getElementById('pmTitle').innerText = product.title;
+      document.getElementById('pmPrice').innerText = 'R '+product.price.toFixed(2);
+      document.getElementById('pmDesc').innerText = product.description || 'No description available.';
+  
+      const thumbs = document.getElementById('pmThumbs'); 
+      thumbs.innerHTML='';
+      product.images.forEach(img=>{
+        const t = document.createElement('img');
+        t.src=img;
+        t.style.width='70px';
+        t.style.height='70px';
+        t.style.objectFit='cover';
+        t.style.borderRadius='8px';
+        t.style.cursor='pointer';
+        t.onclick=()=>document.getElementById('pmImg').src=img;
+        thumbs.appendChild(t);
+      });
+  
+      document.getElementById('productModal').classList.remove('hidden');
+    }
+  
+    function closeProductModal(){
+      document.getElementById('productModal').classList.add('hidden');
+    }
+    
+    function addModalItem(){ 
+      if(CURRENT_MODAL) addToCart(CURRENT_MODAL.id); 
+      closeProductModal(); 
+    }
+  
+    // --- Cart Functions ---
+  
+    function addToCart(id){
+      const product = findProduct(id);
+      if(!product) return;
+      if(!CART[id]) CART[id]={...product,qty:0};
+      CART[id].qty += 1;
+      updateCart();
+      openCart(); 
+    }
+  
+    function updateCart(){
+      const list = document.getElementById('cartList');
+      list.innerHTML = '';
+      let total = 0;
+  
+      Object.values(CART).forEach(item => {
+        total += item.price * item.qty;
+  
+        const row = document.createElement('div'); 
+        row.className = 'cart-item';
+        row.innerHTML = `
+          <img src="${item.images[0]}" style="width:56px;height:56px;border-radius:8px;object-fit:cover" />
+          <div style="flex:1;margin-left:8px;display:flex;flex-direction:column;gap:4px">
+            <div style="font-size:14px;font-weight:500">${item.title}</div>
+            <div style="font-size:13px;color:var(--muted)">R ${item.price.toFixed(2)}</div>
+            <div style="display:flex;gap:4px;align-items:center">
+              <button onclick="decreaseQty(${item.id})" style="background:#2a3440;border:none;color:white;padding:2px 8px;border-radius:6px;cursor:pointer;">-</button>
+              <span>${item.qty}</span>
+              <button onclick="increaseQty(${item.id})" style="background:#2a3440;border:none;color:white;padding:2px 8px;border-radius:6px;cursor:pointer;">+</button>
+              <button onclick="deleteItem(${item.id})" style="margin-left:8px;background:var(--accent);color:white;border:none;padding:2px 6px;border-radius:6px;cursor:pointer;font-size:12px">Delete</button>
+            </div>
+          </div>
+          <div style="font-weight:700;color:var(--accent-2)">R ${(item.price*item.qty).toFixed(2)}</div>
+        `;
+  
+        list.appendChild(row);
+      });
+  
+      document.getElementById('totalAmt').innerText = 'R ' + total.toFixed(2);
+      const count = Object.values(CART).reduce((s,i)=>s+i.qty,0);
+      const cartCountElem = document.getElementById('cartCount');
+      cartCountElem.innerText = count;
+      cartCountElem.style.display = count ? 'inline-block' : 'none';
+    }
+  
+    function deleteItem(id){
+      delete CART[id];
+      updateCart();
+    }
+  
+    function increaseQty(id){ CART[id].qty+=1; updateCart(); }
+    function decreaseQty(id){ 
+      if(CART[id].qty>1){ CART[id].qty-=1; } 
+      else { delete CART[id]; } 
+      updateCart(); 
+    }
+  
+    function toggleCart(){ document.getElementById('drawer').classList.toggle('open'); }
+    function openCart(){ document.getElementById('drawer').classList.add('open'); }
+  
+  
+    // --- Checkout Modal Functions ---
+  
+    function checkout() {
+      const itemCount = Object.keys(CART).length;
+      
+      if (itemCount === 0) {
+          alert("Your cart is empty! Please add some items before checking out.");
+          return;
+      }
+      
+      openCheckoutModal();
+      
+      // Uncheck all delivery options initially
+      document.querySelectorAll('input[name="deliveryMethod"]').forEach(radio => radio.checked = false);
+      
+      // Set total display to subtotal (0 delivery fee)
+      updateModalTotal(0); 
+    }
+  
+    function openCheckoutModal() {
+      checkoutModal.style.display = 'block';
+      
+      const subTotal = getCartSubtotal();
+      
+      // Store subtotal on the modal element for easy access later
+      checkoutModal.dataset.subtotal = subTotal.toFixed(2); 
+      
+      // Set initial display to subtotal (R0 delivery)
+      document.getElementById('modalTotalAmt').textContent = `R ${subTotal.toFixed(2)}`;
+    }
+  
+    function closeCheckoutModal() {
+      checkoutModal.style.display = 'none';
+    }
+    
+    // This function dynamically calculates and updates the total based on the selected delivery fee.
+    function updateModalTotal(deliveryFee) {
+      // Get the base cart subtotal from the stored data attribute
+      const subTotal = parseFloat(checkoutModal.dataset.subtotal || 0); 
+      
+      const totalWithDelivery = subTotal + deliveryFee;
+      const totalElement = document.getElementById('modalTotalAmt');
+      
+      totalElement.textContent = `R ${totalWithDelivery.toFixed(2)}`;
+    }
+  
+    // --- Event Listeners and Initial Setup ---
+  
+    // Close the modal if the user clicks anywhere outside of it
+    window.onclick = function(event) {
+      if (event.target == checkoutModal) {
+        closeCheckoutModal(); 
+      }
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      
+      // 1. Delivery Radio Button Change Listener
+      // Uses the globally declared 'deliveryRadios' (fixing the SyntaxError)
+      deliveryRadios.forEach(radio => {
+        radio.addEventListener('change', (event) => {
+          // Get the price from the data-price attribute
+          const deliveryPrice = parseFloat(event.target.dataset.price);
+          updateModalTotal(deliveryPrice);
+        });
+      });
+  
+      // 2. Yoco Checkout Form Submission
+      checkoutForm.addEventListener('submit', function(e){
+        e.preventDefault();
+  
+        // Read the final calculated total from the display element
+        const finalTotalText = document.getElementById('modalTotalAmt').textContent;
+        const finalTotalRands = parseFloat(finalTotalText.replace('R ', '')); 
+        
+        // Basic validation
+        if (isNaN(finalTotalRands) || finalTotalRands <= 2) {
+            alert("Please ensure you have items in your cart and selected a delivery method.");
+            return;
+        }
+  
+        // Yoco requires amount in cents
+        const totalAmountInCents = Math.round(finalTotalRands * 100); 
+        
+        // Get customer details
+        const customerName = document.getElementById('name').value + " " + document.getElementById('surname').value;
+        const customerEmail = document.getElementById('email').value;
+  
+        // Create Yoco SDK instance
+        const yoco = new YocoSDK({
+          publicKey: 'YOUR_YOCO_PUBLIC_KEY' // Replace with your Yoco public key
+        });
+  
+        yoco.showPopup({
+          amountInCents: totalAmountInCents,
+          currency: 'ZAR',
+          name: 'Order Payment',
+          description: 'Payment for your InyangaYamaCala order',
+          email: customerEmail,
+          onSuccess: function(result) {
+            alert('Payment Successful! Payment ID: ' + result.id);
+            // TODO: Call your backend here to save order details and confirm payment
+            closeCheckoutModal();
+          },
+          onError: function(error) {
+            alert('Payment failed: ' + error.message);
+          }
+        });
+        
+        // Close modal immediately after starting the popup process (optional)
+        closeCheckoutModal();
+  
+      });
+  
+    });
+    
+    // Initial render
+    renderProducts();
+  </script>
+  </body>
+  </html>
