@@ -319,7 +319,7 @@ footer{padding:24px;text-align:center;color:var(--muted)}
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
       <h3 style="margin:0">Products</h3>
       <div style="color:var(--muted);font-size:14px">Sort: 
-        <select id="sort" onchange="renderProducts()" style="background:var(--card);color:var(--text);border:1px solid #2a3440">
+        <select id="sort" onchange="resetAndRender()" style="background:var(--card);color:var(--text);border:1px solid #2a3440">
           <option value="alpha">Alphabetically, A-Z</option>
           <option value="priceLow">Price, low to high</option>
           <option value="priceHigh">Price, high to low</option>
@@ -328,7 +328,13 @@ footer{padding:24px;text-align:center;color:var(--muted)}
     </div>
 
     <div class="grid" id="grid"></div>
-  </main>
+
+    <div id="pagination" style="display:flex; justify-content:center; align-items:center; gap:15px; margin-top:30px; padding-bottom:20px;">
+      <button id="prevPage" onclick="changePage(-1)" style="background:var(--card); color:var(--text); border:1px solid #2a3440; padding:8px 16px; border-radius:8px; cursor:pointer;">Previous</button>
+      <span id="pageInfo" style="font-weight:bold; color:var(--accent-2)">Page 1</span>
+      <button id="nextPage" onclick="changePage(1)" style="background:var(--card); color:var(--text); border:1px solid #2a3440; padding:8px 16px; border-radius:8px; cursor:pointer;">Next</button>
+    </div>
+</main>
 
   <button class="cart-btn" onclick="toggleCart()">🛒 Cart <span class="cart-count" id="cartCount">0</span></button>
 
@@ -1085,19 +1091,48 @@ Geza uphinde ugcobe ngawo lamafuth`
   
     // --- Product Catalog Functions ---
   
-    function renderProducts(){
-      const grid = document.getElementById('grid');
-      grid.innerHTML='';
-      let products = [...PRODUCTS];
-      const sort = document.getElementById('sort').value;
-      if(sort==='priceLow') products.sort((a,b)=>a.price-b.price);
-      if(sort==='priceHigh') products.sort((a,b)=>b.price-a.price);
-      if(sort==='alpha') products.sort((a,b)=>a.title.localeCompare(b.title));
-      document.getElementById('count').innerText = products.length;
-  
-      products.forEach((p)=>{
-        const el = document.createElement('div'); 
-        el.className='card';
+    // --- Pagination State ---
+let currentPage = 1;
+const itemsPerPage = 10;
+
+// Helper to reset to page 1 when sorting or searching
+function resetAndRender() {
+    currentPage = 1;
+    renderProducts();
+}
+
+function renderProducts() {
+    const grid = document.getElementById('grid');
+    grid.innerHTML = '';
+    
+    // 1. Get and Sort Data
+    let products = [...PRODUCTS];
+    const sort = document.getElementById('sort').value;
+    if (sort === 'priceLow') products.sort((a, b) => a.price - b.price);
+    if (sort === 'priceHigh') products.sort((a, b) => b.price - a.price);
+    if (sort === 'alpha') products.sort((a, b) => a.title.localeCompare(b.title));
+
+    // 2. Pagination Logic
+    const totalItems = products.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    
+    // Safety check for empty results
+    if (totalPages === 0) {
+        grid.innerHTML = '<p style="text-align:center; width:100%; color:var(--muted)">No products found.</p>';
+        document.getElementById('pagination').style.display = 'none';
+        return;
+    } else {
+        document.getElementById('pagination').style.display = 'flex';
+    }
+
+    // Slice the array for the current page
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const paginatedItems = products.slice(startIndex, startIndex + itemsPerPage);
+
+    // 3. Render items
+    paginatedItems.forEach((p) => {
+        const el = document.createElement('div');
+        el.className = 'card';
         el.innerHTML = `
           <img src="${p.images[0]}" alt="${p.title}" loading="lazy" />
           <h3>${p.title}</h3>
@@ -1107,11 +1142,36 @@ Geza uphinde ugcobe ngawo lamafuth`
             <button class="add" onclick="addToCart(${p.id}); event.stopPropagation();">Add to Cart</button>
           </div>
         `;
-        el.onclick = ()=> openProductModal(p); 
+        el.onclick = () => openProductModal(p);
         grid.appendChild(el);
-      });
-      updateCart();
-    }
+    });
+
+    // 4. Update UI Controls
+    document.getElementById('count').innerText = totalItems;
+    document.getElementById('pageInfo').innerText = `Page ${currentPage} of ${totalPages}`;
+    document.getElementById('prevPage').disabled = (currentPage === 1);
+    document.getElementById('nextPage').disabled = (currentPage === totalPages);
+    
+    // Visual feedback for disabled buttons
+    document.getElementById('prevPage').style.opacity = (currentPage === 1) ? "0.5" : "1";
+    document.getElementById('nextPage').style.opacity = (currentPage === totalPages) ? "0.5" : "1";
+}
+
+function changePage(step) {
+    currentPage += step;
+    renderProducts();
+    // Scroll to top of catalog so user sees the new items
+    document.getElementById('catalog').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Update doSearch to handle pagination too
+function doSearch() {
+    const q = document.getElementById('q').value.toLowerCase();
+    // In a real app, you'd filter the PRODUCTS array then paginate that result.
+    // For this demo, let's just filter the main array and reset to page 1.
+    currentPage = 1;
+    renderProducts(); 
+}
   
     function doSearch(){ 
       const q=document.getElementById('q').value.toLowerCase(); 
