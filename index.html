@@ -5,27 +5,125 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Inyanga YamaCala — Recreated Shop</title>
   <meta name="description" content="Recreated, lively storefront inspired by InyangaYamaCala — demo with card checkout (Stripe placeholder)">
-  <script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
   <style>
+    /* Red Button Style */
+.auth-submit {
+  width: 100%;
+  padding: 14px;
+  background-color: #ff4d4d; /* Matches the YamaCala Search button */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+  margin-top: 10px;
+}
+
+/* Hover & Active States */
+.auth-submit:hover {
+  background-color: #e64444; /* Slightly darker red on hover */
+}
+
+.auth-submit:active {
+  transform: scale(0.98); /* Subtle "press" effect */
+}
+    .modal-overlay {
+  display: none; /* Hidden by default */
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: #1a1d23;
+  width: 90%;
+  max-width: 400px;
+  padding: 40px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px; right: 20px;
+  font-size: 24px;
+  color: #888;
+  cursor: pointer;
+}
+
+.modal-header { text-align: center; margin-bottom: 30px; }
+.logo-circle {
+  background: #b52b2b;
+  width: 50px; height: 50px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 15px;
+  font-weight: bold;
+}
+.logo {
+  background: linear-gradient(135deg, var(--accent), #8B7355); 
+}
+.input-group { margin-bottom: 20px; }
+.input-group label { display: block; margin-bottom: 8px; font-size: 14px; color: #aaa; }
+.input-group input {
+  width: 100%;
+  padding: 12px;
+  background: #0d0f12;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: white;
+  outline: none;
+}
+
+.login-submit {
+  width: 100%;
+  padding: 14px;
+  background: #ff4d4d; /* Matching your search button */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.form-footer {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 13px;
+  color: #888;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-footer a { color: #ccc; text-decoration: none; }
    /* 🔴 THEME CHANGE: BLACK AND RED */
-:root{
-  --accent:#e63946; /* Bright Red */
-  --accent-2:#ffc300; /* Amber/Gold for contrast */
-  --bg:#0f1724; /* Dark Blue/Black background */
-  --card:#1c2430; /* Slightly lighter dark card color */
-  --text:#f8f9fa; /* White/Light Text */
-  --muted:#b0b6c2; /* Muted light gray */
-  --shadow: 0 8px 24px rgba(0,0,0,0.5); /* Stronger shadow for dark mode */
+/* 🔴 THEME CHANGE: UPDATED TO BLACK AND GOLD */
+:root {
+  --accent: #D4AF37; /* Metallic Gold */
+  --accent-2: #FFD700; /* Bright Gold for highlights */
+  --bg: #000000; /* Pure Black background */
+  --card: #121212; /* Deep Charcoal for cards */
+  --text: #f8f9fa; 
+  --muted: #a1a1aa;
+  --shadow: 0 8px 24px rgba(0,0,0,0.7);
   
-  /* FIXED: ADDED VARIABLES FOR MODAL AND INPUT BACKGROUNDS */
-  --background-secondary: #1c2430; 
-  --input-bg: #0f1724; 
-  --border: #2a3440; 
-  --hover-color: #2a3440; 
+  --background-secondary: #121212; 
+  --input-bg: #080808; 
+  --border: #2a2a2a; 
+  --hover-color: #1a1a1a; 
   --primary: var(--accent); 
-  --primary-dark: #9e0000;
-  
-  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  --primary-dark: #B8860B; /* Dark Goldenrod */
 }
 *{box-sizing:border-box}
 /* Set body to use the new dark background and light text */
@@ -92,8 +190,22 @@ nav a{color:var(--muted);text-decoration:none;font-size:14px}
 
 .filters{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
 /* Updated Chip for Dark Backgrounds */
-.chip{padding:8px 12px;border-radius:999px;background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.25);font-size:13px;color:var(--accent)}
+.chip {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #000000; /* Pure black background */
+  border: 1px solid var(--accent); /* Solid gold border */
+  font-size: 13px;
+  color: var(--accent); /* Gold text */
+  transition: all 0.3s ease;
+}
 
+/* Optional: Add a subtle hover effect to make them interactive */
+.chip:hover {
+  background: var(--accent);
+  color: #000000;
+  cursor: pointer;
+}
 .hero-right{display:flex;flex-direction:column;gap:12px}
 /* Updated Promo */
 .promo{background:linear-gradient(90deg,#ffc300,#ff6600);padding:16px;border-radius:12px;color:var(--bg)}
@@ -102,8 +214,26 @@ nav a{color:var(--muted);text-decoration:none;font-size:14px}
 
 main{padding:24px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px}
-.card{background:var(--card);border-radius:12px;padding:14px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px;transition:transform .18s ease,box-shadow .18s ease;cursor:pointer}
-.card:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(0,0,0,0.3)}
+/* Update your existing .card style to include a transparent border */
+.card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: transform .18s ease, box-shadow .18s ease, border .18s ease; /* Added border to transition */
+  cursor: pointer;
+  border: 1px solid transparent; /* Added to prevent the card from jumping */
+}
+
+/* Replace your current .card:hover with this */
+.card:hover {
+  transform: translateY(-6px);
+  border: 1px solid var(--accent); /* This adds the gold border */
+  box-shadow: 0 18px 40px rgba(212, 175, 55, 0.2); /* This adds a gold glow */
+}
 .card img{width:100%;height:160px;object-fit:cover;border-radius:10px}
 .card h3{margin:0;font-size:16px}
 .price{font-weight:700;color:var(--accent-2)} /* Price in gold for contrast */
@@ -232,7 +362,16 @@ footer{padding:24px;text-align:center;color:var(--muted)}
 .checkout-submit-btn:hover {
   opacity: 0.9;
 }
+.checkout {
+  background: var(--accent);
+  color: black;
+}
 
+.cart-btn {
+  background: var(--accent);
+  color: black;
+  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+}
 .description-collapsed {
   /* Set initial max height for the description */
   max-height: 100px; /* Adjust this value as needed */
@@ -255,23 +394,148 @@ footer{padding:24px;text-align:center;color:var(--muted)}
   background: linear-gradient(to top, var(--card), rgba(255, 255, 255, 0)); /* Use your modal background color (var(--card)) */
   pointer-events: none; /* Allows clicks to go through to the text/button */
 }
+/* Footer Container */
+footer#contact {
+  background: #121212; /* Deep background */
+  color: #a1a1aa;
+  padding: 60px 24px 30px 24px;
+  font-family: 'Inter', sans-serif;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.footer-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 40px;
+}
+
+/* Typography & Links */
+footer h3, footer h4 {
+  color: #ffffff;
+  margin-bottom: 1.25rem;
+  letter-spacing: 0.025em;
+}
+
+footer h4 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+footer p, footer li {
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+footer ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+footer ul li {
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+}
+
+footer a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+footer a:hover {
+  color: #ffffff;
+}
+
+/* WhatsApp Icon Pulse */
+.wa-link:hover svg {
+  fill: #25D366;
+  filter: drop-shadow(0 0 8px rgba(37, 211, 102, 0.4));
+}
+
+/* Bottom Bar */
+.footer-bottom {
+  max-width: 1100px;
+  margin: 50px auto 0 auto;
+  padding-top: 25px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+/* Responsive Tweaks */
+@media (max-width: 768px) {
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+}
+
+.brand-logo-circle {
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.1);
+  transition: transform 0.3s ease;
+}
+
+.brand-logo-circle:hover {
+  transform: scale(1.05);
+}
+.auth-submit, .login-submit, .searchbar button {
+  background-color: var(--accent);
+  color: black; /* Dark text often looks better on gold buttons */
+}
+
+.auth-submit:hover {
+  background-color: var(--primary-dark);
+}
+
   </style>
 </head>
 <body>
-  <header>
-    <div class="brand">
-      <div class="logo">IY</div>
+  <header style="display: flex; justify-content: space-between; align-items: center; padding: 20px 5%;">
+    <div class="brand" style="display: flex; align-items: center; gap: 15px;">
+      <img src="yii.png" alt="YamaCala Logo" style="
+        width: 50px; 
+        height: 50px; 
+        border-radius: 50%; 
+        object-fit: cover; 
+        border: 2px solid rgba(255,255,255,0.1);
+      ">
       <div>
-        <h1>Inyanga YamaCala</h1>
-        <div style="font-size:12px;color:var(--muted)">Traditional remedies & healing</div>
+        <h1 style="margin: 0; font-size: 24px;">YamaCala Solutions</h1>
+        <div style="font-size:12px; color:rgba(255,255,255,0.6)">Traditional remedies & healing</div>
       </div>
     </div>
-    <nav>
-      <a href="#">Home</a>
-      <a href="#catalog">Catalog</a>
-      <a href="#contact">Contact</a>
+
+    <nav id="main-nav" style="display: flex; align-items: center; gap: 20px;">
+      <a href="#catalog" style="text-decoration: none; color: white;">Catalog</a>
+      <a href="#contact" style="text-decoration: none; color: white;">Contact</a>
+      
+      <a href="javascript:void(0)" 
+         onclick="toggleLogin()" 
+         style="
+          padding: 6px 16px;
+          border: 1px solid rgba(255,255,255,0.2);
+          border-radius: 6px;
+          text-decoration: none;
+          color: white;
+          cursor: pointer;
+          transition: background 0.3s ease;
+        " onmouseover="this.style.background='rgba(255,255,255,0.1)'" 
+           onmouseout="this.style.background='transparent'">
+        Login
+      </a>
     </nav>
-  </header>
+</header>
 
   <section class="hero">
     <video autoplay muted loop class="hero-video">
@@ -302,7 +566,7 @@ footer{padding:24px;text-align:center;color:var(--muted)}
   
     <aside class="hero-right">
       <div class="promo pulse">
-        <strong>Live Offer:</strong> Use code <strong>INYANGA10</strong> for 10% off your first order over R1000.
+        <strong>Live Offer:</strong> Use code <strong>INYANGA10</strong> for 5% off your first order over R1000.
       </div>
   
       <div style="background:var(--card);padding:12px;border-radius:12px;box-shadow:var(--shadow);margin-top:12px;">
@@ -373,12 +637,12 @@ footer{padding:24px;text-align:center;color:var(--muted)}
             Courier Guy – R200.00 (1-3 Business Days)
           </label>
           <label>
-            <input type="radio" name="deliveryMethod" value="pepPaxiStandard" data-price="60.00" required>
-            PEP Paxi Standard – R60.00 (7-9 Business Days)
+            <input type="radio" name="deliveryMethod" value="pepPaxiStandard" data-price="200.00" required>
+            PEP Paxi Standard – R200.00 (7-9 Business Days)
           </label>
           <label>
-            <input type="radio" name="deliveryMethod" value="pepPaxiExpress" data-price="110.00" required>
-            PEP Paxi Express – R110.00 (3-5 Business Days)
+            <input type="radio" name="deliveryMethod" value="pepPaxiExpress" data-price="200.00" required>
+            PEP Paxi Express – R200.00 (3-5 Business Days)
           </label>
         </div>
   
@@ -393,7 +657,55 @@ footer{padding:24px;text-align:center;color:var(--muted)}
   </div>
 
   <footer id="contact">
-    © 2025 Inyanga YamaCala — Recreated demo. Contact: 082 691 7618
+    <div class="footer-container">
+      
+      <div class="footer-section">
+        <h3>YamaCala Solutions</h3>
+        <p>Handcrafted traditional remedies and healing treatments delivered to your door across South Africa.</p>
+        <div style="margin-top: 20px;">
+          <a href="https://wa.me/27623304354" class="wa-link">
+            <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+          </a>
+        </div>
+      </div>
+  
+      <div class="footer-section">
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="#catalog">Catalog</a></li>
+          <li><a href="#">Oils & Tinctures</a></li>
+          <li><a href="#">Herbal Remedies</a></li>
+        </ul>
+      </div>
+  
+      <div class="footer-section">
+        <h4>Shipping & Payment</h4>
+        <ul>
+          <li>🚚 Courier Guy (1-3 Days)</li>
+          <li>📦 PEP Paxi (3-9 Days)</li>
+          <li>💳 EFT Payments Only</li>
+        </ul>
+      </div>
+  
+    <div class="footer-section">
+      <h4>Get In Touch</h4>
+      <ul>
+        <li>📞 062 330 4354</li>
+        <li>
+          ✉️ <a href="mailto:info@yamacalasolutions.co.za" style="color: inherit; text-decoration: none;">
+            info@yamacalasolutions.co.za
+          </a>
+        </li>
+        <li>📍 South Africa</li>
+      </ul>
+    </div>
+  
+    </div>
+  
+    <div class="footer-bottom">
+      <div>© 2025 Inyanga YamaCala. All Rights Reserved.</div>
+      <div>Secure Payments • Nationwide Delivery</div>
+    </div>
   </footer>
 
   <div id="productModal" class="pm-wrap hidden" style="position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:200;">
@@ -421,6 +733,65 @@ footer{padding:24px;text-align:center;color:var(--muted)}
     </div>
 </div>
 
+<div id="loginModal" class="modal-overlay" onclick="closeLogin(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <span class="close-btn" onclick="toggleLogin()">&times;</span>
+    
+    <div class="modal-header" style="text-align: center; padding-bottom: 20px;">
+      <img src="yii.png" alt="YamaCala Logo" style="
+        width: 60px; 
+        height: 60px; 
+        border-radius: 50%; 
+        object-fit: cover; 
+        margin-bottom: 15px;
+        border: 2px solid rgba(255,255,255,0.1);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      ">
+      <h2 id="modalTitle" style="margin: 0; font-size: 22px; color: white;">Welcome Back</h2>
+      <p id="modalSubtitle" style="margin: 5px 0 0; font-size: 14px; color: rgba(255,255,255,0.6);">
+        Sign in to your account
+      </p>
+    </div>
+
+    <form id="loginForm" class="auth-form" action="login.php" method="POST">
+      <div class="input-group">
+        <label>Email Address</label>
+        <input type="email" name="email" placeholder="e.g. name@email.com" required>
+      </div>
+      <div class="input-group" style="position: relative;">
+        <label>Password</label>
+        <input type="password" name="password" class="password-field" placeholder="••••••••" required>
+        <span class="toggle-password" onclick="togglePasswordVisibility(this)" style="position: absolute; right: 12px; top: 38px; cursor: pointer; color: #888; font-size: 12px; user-select: none;">SHOW</span>
+      </div>
+      <button type="submit" class="auth-submit">Login</button>
+      <div class="form-footer">
+        <a href="#">Forgot password?</a>
+        <span>Don't have an account? <a href="javascript:void(0)" onclick="switchForm('signup')" style="color: #ff4d4d; font-weight: bold; text-decoration: none;">Sign up</a></span>
+      </div>
+    </form>
+
+    <form id="signupForm" class="auth-form" style="display: none;" action="signup.php" method="POST">
+      <div class="input-group">
+        <label>Full Name</label>
+        <input type="text" name="full_name" placeholder="John Doe" required>
+      </div>
+      <div class="input-group">
+        <label>Email Address</label>
+        <input type="email" name="email" placeholder="name@email.com" required>
+      </div>
+      <div class="input-group" style="position: relative;">
+        <label>Password</label>
+        <input type="password" name="password" class="password-field" placeholder="••••••••" required>
+        <span class="toggle-password" onclick="togglePasswordVisibility(this)" style="position: absolute; right: 12px; top: 38px; cursor: pointer; color: #888; font-size: 12px; user-select: none;">SHOW</span>
+      </div>
+      <button type="submit" class="auth-submit">Create Account</button>
+      <div class="form-footer">
+        <span>Already have an account? <a href="javascript:void(0)" onclick="switchForm('login')" style="color: #ff4d4d; font-weight: bold; text-decoration: none;">Login</a></span>
+      </div>
+    </form>
+  </div>
+</div>
+
   <script>
   
     // --- Cart Data Structure ---
@@ -442,7 +813,7 @@ footer{padding:24px;text-align:center;color:var(--muted)}
         id: 9,
         title: 'Asthma Relief & Cure Drink',
         price: 3500.00, // Ensure price is a number
-        images: ['1.png','2.png','3.png','4.png','5.png','6.png'],
+        images: ['asthma.jpeg','2.png','3.png','4.png','5.png','6.png'],
         description: `Breathe Easy, Live Free
   Say goodbye to asthma attacks and hello to a life of freedom! Our Asthma Relief & Cure Drink is a natural, effective solution designed to help manage and reduce asthma symptoms. With a simple 2-spoon dose, taken twice daily, you can take control of your respiratory health.
   Key Benefits:
@@ -657,14 +1028,14 @@ footer{padding:24px;text-align:center;color:var(--muted)}
     id: 26,
     title: 'Swollen Feet',
     price: 120,
-    images: ['42.jpeg'],
+    images: ['swollen.jpeg'],
     description: 'POUR ONE TEASPOON IN WARM WATER, SOAK YOUR FEET YOUR FEET FOR MINUTES. THEREAFTER POUR A TEASPOON IN A CUP MAKE TEA AND DRINK 2 TIMES A DAY BEFORE OR AFTER FOOD.'
   },
   {
     id: 27,
     title: 'Isibeletho',
     price: 60,
-    images: ['43.jpeg'],
+    images: ['isib.jpeg'],
     description: 'DRINK HALF A CUP I THE MORNING AFTER FOOD AND ANOTHER HALF A CUP AT NIGHT AFTER FOOD. UNTIL YOU FEEL THE DIFFERENCE.'
   },
   {
@@ -683,7 +1054,7 @@ footer{padding:24px;text-align:center;color:var(--muted)}
   id: 29,
   title: 'Skin Remover',
   price: 0000,
-  images: ['46.jpeg'],
+  images: ['sk29.jpeg'],
   description: `ONLY AVAILABLE ESIGODLWENI
 
 THIS IS USED WHEN YOU WANT SOMEONE TO HAVE A DIFFERENT COLOR SKIN THEN THEIR NORMAL SKIN COLOR (VITILIGO).`
@@ -691,22 +1062,22 @@ THIS IS USED WHEN YOU WANT SOMEONE TO HAVE A DIFFERENT COLOR SKIN THEN THEIR NOR
 {
   id: 30,
   title: 'Hlukanisa',
-  price: 0000,
-  images: ['47.jpeg'],
+  price: 4000,
+  images: ['hluk.jpeg'],
   description: `THIS IS STRICKLY FOR YOUR PARTNER WHO IS CHEATING. TAKE YOUR PARTNERS PHOTO AND OF THE OTHER PERSON/S. GO TO AN OPEN FIELD, DIG A SHALLOW HOLE AND PLACE THE PHOTOS I THAT HOLE, DO NUMBER 2 ONTOP OF THE PICTURES THEN POUR THE WHOLE OF THE MEDICINE ONTOP OF YOUR NUMBER 2 THEREAFTER TAKE A STICK, HIT INTHERE WHILE TALKING MENTIONING THEIR FULL NAMES. I OF YOU DO NOT KNOW OF THE OTHERS NAMES MENTION YOUR PARTNERS FULL NAMES AND SAY " NAMES, WHOEVER YOU ARE WITH MUST DISLIKE YOU WITH ALL THEIR HEATS AND LEAVE YOU ALONE FOR GOOD." LEAVE EVERYTHING LIKE THAT AND GO, DO NOT LOOK BACK. WATCH AND SEE.`
 },
 {
   id: 31,
   title: 'Umeqo Wothando',
   price: 2500,
-  images: ['49.jpeg'],
+  images: ['umeqo.jpeg'],
   description: `TAKE YOUR USUAL STEAMING POT OR BUCKET 10L POUR WATER AND ALL THE MEDICINE INSIDE, BOIL AND STEAM CALL THEIR FULL NAMES AND SAY WHAT YOU WOULD LIKE TO HAPPEN, THEREAFTER THROW THE MEDICINE ON THE ROAD WHERE YOU ARE SURE THAT THIS PERSON YOU CALLED WILL WALK ON. THEN WATCH AND SEE.`
 },
 {
   id: 32,
   title: 'Vutha',
   price: 0000,
-  images: ['48.jpeg'],
+  images: ['sk32.jpeg'],
   description: `ONLY AVAILABLE ESIGODLWENI
 
 TAKE A PICTURE /PHOTO OF THE PERSON YOU WANT TO UNLIVE,  POUR ALL THE MEDICINE ONTO THE PHOTO PLACE THE PHOTO FACING THE SUN (OLNY IN HOT DAYS), THE PHOTO WILL BURN AND THE JOB WILL BE DONE.`
@@ -715,14 +1086,14 @@ TAKE A PICTURE /PHOTO OF THE PERSON YOU WANT TO UNLIVE,  POUR ALL THE MEDICINE O
   id: 33,
   title: 'UMDLIWA SPIRITUAL HUSBAND',
   price: 4000,
-  images: ['50.jpeg'],
+  images: ['sk33.jpeg'],
   description: `GET A 20L OF TAP WATER, PLACE THE ENTIRE MEDICINE INTO THE WATER. GO TO AN OPEN FILED (ISIGANGA) WITH THE 20L AND A BLACK MALE CHIKHEN. SLOTTER THE CHICKEN AND TAKE THE INSIDE (INYONGO, UMSWANE AND THE BLOOD PUT THEN IN THAT 20L, DIG A SHALLOW GRAVE. TAKE OFF ALL YOUR CLOTHES. KNEEL FACING WHERE THE SUNSETS, BATH WITH THAT 20L MIXTURE FROM HEAD TO TOE WHILE TALKING TO YOUR SPIRITUAL HUSBAND TO LEAVE YOU ALONE. THERE AFTER YOU PLACE THE DEAD CHICKEN INSIDE THE GRAVE, GET OUT AND PUT THE SAND BACK IN, TO CLOSE THE GRAVE WITH YOUR FEET NOT LOOKING AT THE GRAVE THEN WALK AWAY WITHOUT LOOKING BACK AT THE GRAVE AND DON'T TALK TO ANYONE UP UNTIL YOU GET HOME. YOU MIGHT NEED A PERSON/S TO HELP YOU WITH THIS PROCESS. YOU THIS ONLY AT NIGHT.`
 },
 {
   id: 34,
   title: 'BUSO LOMOYA',
   price: 300,
-  images: ['51.jpeg'],
+  images: ['Buso.jpeg'],
   description: `BEFORE STEAMING PLACE THE PHOTO OF YOUR PERSON INSIDE THE BOILING MEDICINE THEN STEAM. SPEAK YOUR WISHES ABOUT THEM. THERE AFTER YOU MAY THROW EVERYTHING AWAY OR KEEP THE PHOTO.`
 },
 {
@@ -737,7 +1108,7 @@ TAKE A TABLESPOON OF THE MEDICINE, ADD IT IN A CUP OF WARM WATER AND GAGGLE EVER
   id: 36,
   title: 'Isithwalo se watch',
   price: 000,
-  images: ['53.jpeg'],
+  images: ['sk36.jpeg'],
   description: `ONLY AVAILABLE ESIGODLWENI.
 
 YOU GO TO THE TAXI RANKS TO ASK FOR SILVER COINS FROM PEOPLE, MAKE SURE WHEN THEY GIVE THEM TO YOU, THEY ARE ON THEIR FEET (STANDING). TAKE THOSE COINS AND A NEW WATCH TO UMKHULU AND HE'LL EXPLAIN FURTHER`
@@ -746,21 +1117,21 @@ YOU GO TO THE TAXI RANKS TO ASK FOR SILVER COINS FROM PEOPLE, MAKE SURE WHEN THE
   id: 37,
   title: 'Buyisa Okutsontsile',
   price: 7500,
-  images: ['61.jpeg'],
+  images: ['sk37.jpeg'],
   description: `TAKE A TABLESPOON AMOUNT OF THE MEDICINE POUR IT WHERE YOU LAST PLACED YOUR LOST ITEM (A CAR, PHONE, JEWELRY, LIFE STOCK & ETC) BURN THAT MEDICINE, WHILE BURNING YOU SPEAK FOR YOUR ITEM/S TO COME BACK. THEREAFTER YOU TAKE ANOTHER TABLESPOON OF THE MEDICINE AND MIX IT IN A 2L OF COLD WATER AND GO SPRINKLE WHERE YOU HAVE BURNED THE MEDICINE SAYING THE SAME THINGS YOU'VE SAID WHEN BURNING THE MEDICINE. 3 DAYS SHOULD BE ENOUGH, ONE'S A DAY WHERETHER MORNING OR EVENING. IT IS ENTIRELY UP TO YOU.`
 },
 {
   id: 38,
   title: 'Stop Drugs',
   price: 4000,
-  images: ['54.jpeg'],
+  images: ['sk38.jpeg'],
   description: `MIXT  HALF A TEASPOON WIITH WHATEVER YOU ARE SMOKING OR OF THE LOVED ONES. THE MORE THE SMOKE THE MIXTURE THE MORE THEY WILL DISLIKE SMOKING AND EVENTUALLY QUIT.`
 },
 {
   id: 39,
   title: 'Amabutho',
   price: 5000,
-  images: ['55.jpeg'],
+  images: ['sk39.jpeg'],
   description: `AT 11H58 TAKE ALL OF YOUR CLOTHES OFF. AT 00H00 BURN A COAL AND POUR THE MEDICINE WITH IT'S BOTTLE CAP ONTO THE BURNING COAL. STAND NEXT TO AN OPEN WINDOW FROM INSIDE THE HOUSE OR ROOM. YOU LET THE SMOKE TO GO OUTSIDE THE OPEN WINDOW WHILE TALKING SENDING THE AMABUTHO THE MEDICINE OUT TO GO WORK FOR YOU. THEY ARE DIFFERENT TYPES OF AMABUTHO THE MEDICINE.
 1. TO BRING BACK (UKULANDA) 
 2. TO UNLIVE (AWObULALA)
@@ -770,42 +1141,42 @@ YOU GO TO THE TAXI RANKS TO ASK FOR SILVER COINS FROM PEOPLE, MAKE SURE WHEN THE
   id: 40,
   title: 'Izibobo/Amahlana',
   price: 500,
-  images: ['56.jpeg'],
+  images: ['sk40.jpeg'],
   description: `DRINK  HALF A TEASPOON OF THE MEDICINE IN HOT WATER LIKE TEA, MIX THE MEDICINE WITH WATER USING A KNIFE. YOU MAY SPEAK WHILE MIXING. TWICE A DAY AFTER OR BEFORE FOOD.`
 },
 {
   id: 41,
-  title: 'Isiwasho Sabadala',
-  price: 3600,
-  images: ['58.jpeg'],
+  title: 'Imimoya Emibi',
+  price: 250,
+  images: ['sk41.png'],
   description: `A traditional ancestral wash used in cultural cleansing practices.`
 },
 {
   id: 42,
   title: 'Duka Nezwe',
   price: 8000,
-  images: ['57.jpeg'],
+  images: ['duka.jpeg'],
   description: `IF YOU WANT SOMEONE TO GO AS FAR POSSIBLE FROM YOUR SIGHT FOREVER. BE AT WORK, AT HOME, OR NEXT DOOR. YOU TAKE THE MEDICINE WITH YOUR FINGERS AND SPRINKLE WHERE THIS PERSON OR PEOPLE USUALLY SEAT, SLEEP OR WHERE THEY WILL BE ABLE TO STEP ON THE MEDICINE LIKE AT THE DOOR OF THE PLACE WHERE YOU DO NOT WANNA SEE THEM FROM ANYMORE. YOU CALL UPON THEIR NAMES AND TELL THEM TO DISAPPEAR WITH NO TRACE FOR GOOD.`
 },
 {
   id: 43,
   title: 'Imimoya Emibi',
   price: 250,
-  images: ['58.jpeg'],
+  images: ['sk43.jpeg'],
   description: `MEASURE THE MEDICINE WITH THE BOTTLE LID, BURN IT USING A COAL. YOU SPEAK YOUR WISHES WHILE BURNING. YOU DO NOT ASK, YOU COMMAND THE MEDICINE TO DO IT'S BET.`
 },
 {
   id: 44,
   title: 'Ukuzicupha Ungathakatheki',
   price: 10000,
-  images: ['59.jpeg'],
+  images: ['sk44.png'],
   description: `YOU WILL NEED A PACK OF RASERS, PACK OF NEEDLES AND A PEACE OF A MIRROR. YOU GO TO AN OPEN FIELD, DIG A SHALLOW HOLE, MAKE FIRE IN THE HOLE. WHEN THE FIRE IS OUT AND ONLY THE HOT COAL IS LEFT, PUT THE MIRROR ONTOP OF THE HOT COAL. YOU PLACE THE RASERS AND THE NEEDLES ONTOP OF THE MIRROR THEN TAKE ONE RASER, AND CUT A TINY BUT BLOODY CUT FROM YOUR FOREHEAD, LET THE BLOOD DROP FEW DROPS ONTO THE MIRROR, RASERS AND NEEDLES THAT ARE IN THE HOLE ONTOP OF BURNING COAL THEN YOU POUR THA MEDICINE AFTER YOUR BLOOD. EVERYTHING WILL POP LIKE POPCORNS. YOU LEAVE EVERYTHING LIKE THAT YOU GO HOME.`
 },
 {
   id: 45,
   title: 'Izizwe',
   price: 0000,
-  images: ['60.jpeg'],
+  images: ['iziz.jpeg'],
   description: `ONLY AVAILABLE ESIGODLWENI.
 
 THIS IS FOR THE PROSTS AND PROPHETS.
@@ -815,35 +1186,35 @@ IF YOU WANT TO ENHANCE YOUR SKILLS OF BEING A SEER. THIS MEDICINE IS FOR YOU. MK
   id: 46,
   title: 'Traditional Prevention',
   price: 0000,
-  images: ['62.jpeg'],
+  images: ['tp.jpeg'],
   description: `THIS IS STRICKLY FOR WOMEN. YOU TAKE YOUR SANITARY TOWEL OR YOUR UNDERWEAR. YOU DIG A HOLE WHERE YOU WILL NOT FORGET THEN YOU PLACE YOUR SANITARY TOWEL WITH THIS MEDICINE, POUR ALL OF IT IN THE HOLE. CLOSE THE HOLE AND YOU WILL NOT BARE THE FRUITS OF THE WOMB UP UNTIL YOU GO DIG THE SANITARY TOWEL OR UNDERWEAR OUT. WARNING : MEASURE YOU WILL REMEMBER THE HOLE FOR WHEN YOU ARE READY THE FRUITS OF THE WOMB.`
 },
 {
   id: 47,
   title: 'Sebenza Inxeba',
   price: 800,
-  images: ['63.jpeg'],
+  images: ['sk47.jpeg'],
   description: `IF YOU HAVE BEEN STABBED OR SHOT AT AND YOU'RE SURVIVED. YOU NEED TO DO A BACK TO SENDER, THIS IS FOR YOU. TAKE A 2L OF COLD WATER MIX WITH THE MEDICINE, TAKE A TOWEL OR CLOTH TO CLEAN YOUR WOUND WITH. CLEAN YOUR WOUND WHILE TALKING, TELLING THE MEDICINE STATING THAT YOU WANT THE PERSON WHO STABBED YOU TO GET STABBED EVERY TIME UNTIL THEY DIE OR GET SHOT EVERY TIME UNTIL THEY DIE. IT WILL HAPPEN`
 },
 {
   id: 48,
   title: 'Piles / Umhlume',
   price: 1000,
-  images: ['64.jpeg'],
+  images: ['sk48.jpeg'],
   description: `THIS IS FOR THOSE WITH SEVERE PILES AS WELL. COOK YOUR PORIDGE, DISH UP LIKE NORL THEN ADD A TABLESPOON OF THE MEDICINE INTO YOUR PORIDGE THEN EAT IT. YOU DO THIS EVERY MORNING UNTIL THEY ARE CORED.`
 },
 {
   id: 49,
   title: 'Bakuqome',
   price: 1200,
-  images: ['65.jpeg'],
+  images: ['baku.jpeg'],
   description: `TAKE A HAND FULL OF THE MEDICINE, POUR IT IN A 2L STEAMING BUCKET. STEAM FOR 3 DAYS IN A ROW AT NIGHT. WHILE STEAMING CALL THEIR NAMES TELLING THEM TO LOVE YOU, GIVE YOU ATTENTION AND THEY MUST COME TO YOU AND TELL YOU HOW THAT FEEL ABOUT YOU. ON THE 4TH DAY YOU TAKE A LID AMOUNT OF THE MEDICINE ADD IT INTO YOUR LOTION, APPLY IT ON YOUR BODY. ON THE 5TH DAY YOU APPLY YOUR LOTION AND GO SPEAK WITH THEM TELLING THEM HOW YOU FEEL ABOUT THEM.`
 },
 {
   id: 50,
   title: 'Imfelo',
   price: 6000,
-  images: ['66.jpeg'],
+  images: ['sk50.jpeg'],
   description: `THIS IS FOR PEOPLE WHO ARE SUFFERING FROM FIBROTS. EVERY MORNING YOU MIX A TABLESPOON OF THIS MEDICINE WITH YOUR SOFT PORIDGE BEFORE YOU EAT ANYTHING ELSE. YOU DO THIS UNTIL YOU ARE CORED OR YOU FINISH THE MEDICINE.`
 },
 // .........
@@ -852,14 +1223,14 @@ IF YOU WANT TO ENHANCE YOUR SKILLS OF BEING A SEER. THIS MEDICINE IS FOR YOU. MK
   id: 51,
   title: 'Cleanse Yourself',
   price: 400,
-  images: ['67.jpeg'],
+  images: ['sk51.jpeg'],
   description: `THIS IS A BLOOD CLEANSER, IT GETS RID OF SORES INSIDE AND A BAD OMEN (ISIDINA) CLEANSES LIVER AND KIDNEYS AS WELL, IT RESTORES YOUR NATURAL ORA. YOU TAKE 1 TEASPOON IN BOILING WATER FIRST THING IN THE MORNING BEFORE EATING ANYTHING. YOU DO THIS ONCE A DAY.`
 },
 {
   id: 52,
   title: 'Siyakha Siyabidliza',
   price: 2200,
-  images: ['68.jpeg'],
+  images: ['siya.jpeg'],
   description: `POUR ALL THE MEDICINE ON YOUR LEFT HAND, STAND AT THE GATE OR ON THE SIDE OF THE HOUSE OF YOUR ENEMIE/S, BLOW THE MEDICINE INSIDE THE YARD AND SAY WHAT YOU WOULD LIKE TO SEE HAPPENING IN THAT YARD/HOUSE.
 IF YOU HAVE ACCESS TO GO INTO THE YARD, YOU CAN POUR IT AT THE GATE INSIDE. THIS MEDICINE STOPS THE PROGRESS OF THE HOME.`
 },
@@ -867,7 +1238,7 @@ IF YOU HAVE ACCESS TO GO INTO THE YARD, YOU CAN POUR IT AT THE GATE INSIDE. THIS
   id: 53,
   title: 'Gambling',
   price: 0000,
-  images: ['69.jpeg'],
+  images: ['gamble.jpeg'],
   description: `ONLY AVAILABLE ESIGODLWENI.
 
 THIS IS FOR THE CASNIO CAMBLERS. NOT WITH THE PHONE BUT PHYSICALLY. YOU TAKE A SMALL AMOUNT OF THE MEDICINE, APPLY IT ON YOUR HANDS AND EYEBROWS BEFORE TOUCHING THE GABLING MACHINE. IT IS NOT MAGIC BUT IT ENHANCES YOUR LUCK AND INCREASE YOUR  WINNING CHANCES. THAT'S IF YOUR LUCK IS IN GAMBLING.`
@@ -876,7 +1247,7 @@ THIS IS FOR THE CASNIO CAMBLERS. NOT WITH THE PHONE BUT PHYSICALLY. YOU TAKE A S
   id: 54,
   title: 'Mketule',
   price: 0000,
-  images: ['70.jpeg'],
+  images: ['mke.jpeg'],
   description: `ONLY AVAILABLE ESIGODLWENI.
 
 AS IT SAYS RIP, IF YOU WANT TO TAKE SOMEONE OUT. MKHULU NDABEZITHA WILL ELABORATE FURTHER FOR YOU ESIGODLWENI.`
@@ -886,29 +1257,29 @@ AS IT SAYS RIP, IF YOU WANT TO TAKE SOMEONE OUT. MKHULU NDABEZITHA WILL ELABORAT
   id: 55,
   title: 'Remote Control',
   price: 6000,
-  images: ['71.jpeg'],
+  images: ['remote.jpeg'],
   description: `THIS IS FOR SOMEONE YOU ARE INTERESTED IN OR YOU WANT YOUR PERSON TO LISTEN TO YOU OR YOUR EX TO PROVIDE FOR THE KIDS FINANCIALLY. TAKE A 2L BOTTLE, POUR ALL THE MEDICINE INSIDE, ON A PEACE OF PAPER YOU WRITE THEIR FULL NAMES, PLACE THE PAPER INSIDE THE 2L. ADD IN THE 2L A SMALL AMOUNT OF YOUR FIRST MORNING URINE BEFORE EVEN SPEAKING WITH ANYONE, ADD A SMALL AMOUNT OF SEA WATER, FILL THE BOTTLE WITH TAP WATER TO ITS SHOULDERS. WHENEVER YOU WANT THINGS TO BE DONE, YOU SHAKE THAT BOTTLE AND SPEAK YOUR WISHES. CONSISTENCY IS KEY ON THIS ONE.`
 },
 {
   id: 56,
   title: 'Ingane Edla Amazinyo',
   price: 380,
-  images: ['72.jpeg'],
+  images: ['sk56.jpeg'],
   description: `THIS MEDICINE IS FOR KIDS WHO GRINDS THEIR TEETH WHILE AT SLEEP. TAKE A SMALL AMOUNT OF THE MEDICINE, PLACE IT IN YOUR HAND. LET THE KID/S COUGH ON IT. DO THIS ONCE A DAY FOR 3 DAYS A WEEK UNTIL THEY GET BETTER`
 },
 // ===
-{
-  id: 57,
-  title: 'PHONE CALL ',
-  price: 1500,
-  images: ['73.jpeg'],
-  description: `TAKE A SMALL AMOUNT OF THE MEDICINE, PLACE IT UNDER YOUR TONGUE. CALL THAT PERSON YOU ARE INTERESTED IN OR BEFORE YOUR INTERVIEW OR A BUSINESS DEAL.`
-},
+// {
+//   id: 57,
+//   title: 'PHONE CALL ',
+//   price: 1500,
+//   images: ['73.jpeg'],
+//   description: `TAKE A SMALL AMOUNT OF THE MEDICINE, PLACE IT UNDER YOUR TONGUE. CALL THAT PERSON YOU ARE INTERESTED IN OR BEFORE YOUR INTERVIEW OR A BUSINESS DEAL.`
+// },
 {
   id: 58,
   title: 'Two Days Headache',
   price: 0000,
-  images: ['74.jpeg'],
+  images: ['head.jpeg'],
   description: `ONLY AVAILABLE ESIGODLWENI.
 
 IF YOU SUFFER FROM AN UNBEARABLE HEADACHE CONSISTANTLY. MKHULU NDABEZITHA WILL BE AT YOUR SERVICE.`
@@ -924,56 +1295,56 @@ IF YOU SUFFER FROM AN UNBEARABLE HEADACHE CONSISTANTLY. MKHULU NDABEZITHA WILL B
   id: 60,
   title: 'LUCK',
   price: 600,
-  images: ['76.jpeg'],
+  images: ['luck.jpeg'],
   description: `THIS MEDICINE IS FOR THOSE WHO WANTS TO ENHANCE THEIR LUCK AFTER YOU HAVE CLEANSED YOURSELF OFF THE BAD OMEN. YOU MEASURE THE MEDICINE WITH ITS LID, POUR THE MEASURED MEDICINE IN A 5L OF HOT WATER, WAIT FOR IT TO COOL DOWN SO IT'S DRINKABLE, PALAZA WITH IT EARLY IN THE MORNING BEFORE ANYTHING. THEREAFTER TAKE 5L OF COLD WATER AFTER YOUR NORMAL BATH, MEASURE THE SAME WAY AND MIX WITH WATER AND BATH WITH IT, NO SOAP. THEN IN THE EVENING STEAM WITH A 5L OF WATER ADD THE SAME AMOUNT OF THIS MEDICINE. DO THIS FOR 3 CONSECUTIVE DAYS WITHOUT FAIL. ON THE 3RD DAY THE MEDICINE SHOULD BE FINISHED. DO NOT BATH WITH THE SAME MEDICINE YOU STEAMED WITH, YOU THROW EVERYTHING IN THE DRAIN OUTSIDE THE HOUSE OR THE YARD.`
 },
 {
   id: 61,
   title: 'Vikela Idliso',
   price: 700,
-  images: ['77.jpeg'],
+  images: ['vikela.jpeg'],
   description: `IF YOU SUSPECT THAT YOU HAVE ENEMIES WHO WANT TO POISON YOU. THIS MEDICINE IS FOR YOU. TAKE A RASER OR BLADE MAKE A SMALL INSITION FROM THE FROM, TO THE SIDE, AT THE BACK AND ON THE OTHER SIDE OF THE NECK. PUT A SMALL AMOUNT OF THE MEDICINE INTO THE INSITIONS. THIS KILLS THE POWER OF THE POISON INSTANTLY BEFORE IT COULD DO ITS JOB OR WORK ON YOU.`
 },
 {
   id: 62,
   title: 'Straight Gender',
   price: 9000,
-  images: ['78.jpeg'],
+  images: ['sk62.jpeg'],
   description: `"RECTIFY" THE GENDER OF YOUR CHILD OR FOR YOURSELF. GET A SMALL GOAT THAT HAS NOT MATE YET. TAKE IT TO AN OPEN FIELD, PAHLA OR PRAY OR TALK WITH IT LETTING IT KNOW WHAT YOU ARE ABOUT TO DO. MAKE A BIG FIRE, CUT YOUR CHILDS HAIR OR YOUR HAIR AT THE BACK ONLY. YOU SLAUGHTER THE GOAT TAKE THE INSIDES LIKE (UMSWANE, INYONGA AND THE BLOOD). TAKE 20L OF COLD WATER POUR THE INSIDES IN THERE. TAKE YOUR CHILDS HAIR PLACE THE HAIR INSIDE THE DEAD GOAT, TAKE THE GOAT AND PLACE IT INTO THE FIRE TO BURN. WHOLE THE GOAT BURNS YOU TAKE YOUR CHILDS CLOTHES ALL OFF, LET THEM FACE THE DIRECTION OF THE SUNRISES TURNING THEIR BACK FROM THE FIRE THEN POUR THE MIXTURE FROM THEIR HEAND TO TOE. LET THEM WALK A SMALL DISTANCE WITH THEIR BACKS AGAINST THE FIRE STILL THEN THEY GET DRESSED AND GO HOME WITHOUT LOOKING BACK AT THE FIRE, THEY DO NOT TALK TO ANYONE UNTIL THEY GET HOME.`
 },
 {
   id: 63,
   title: 'Bethela Umuzi',
   price: 0,
-  images: ['79.jpeg'],
+  images: ['sk63.jpeg'],
   description: `IF YOU WANT YOUR HOME AND YOUR BELONGINGS TO BE PROTECTED. UMKHULU NDABEZITHA WILL BE AT YOUR SERVICE.`
 },
 {
   id: 64,
   title: 'Umuthi Wemfuyo',
   price: 8000,
-  images: ['80.jpeg'],
+  images: ['umu.jpeg'],
   description: `THIS IS THE FARMERS OR THOSE WHO WISH TO HAVE A LOT OF CATTLES. AT MIDNIGHT, YOU GO INTO THE KRAAL NAKED, BURN A COAL INSIDE THE KRAAL, MEASURE WITH THE BOTTLE LID THE AMOUNT OF THE MEDICINE AND POUR IT ONTO TO THE BURNING COAL. SPEAK THAT YOU WANT YOUR KRAAL TO BE FULL AND PROTECTED FROM THE THIEVES, AND FOR YOUR CATTLES TO NEVER GET LOST, THEY MUST ALWAYS FIND THEIR WAY BACK HOME.`
 },
 {
   id: 65,
   title: 'Ochama Gazi',
   price: 8000,
-  images: ['81.jpeg'],
+  images: ['sk65.jpeg'],
   description: `THIS IS THE FARMERS OR THOSE WHO WISH TO HAVE A LOT OF CATTLES. AT MIDNIGHT, YOU GO INTO THE KRAAL NAKED, BURN A COAL INSIDE THE KRAAL, MEASURE WITH THE BOTTLE LID THE AMOUNT OF THE MEDICINE AND POUR IT ONTO TO THE BURNING COAL. SPEAK THAT YOU WANT YOUR KRAAL TO BE FULL AND PROTECTED FROM THE THIEVES, AND FOR YOUR CATTLES TO NEVER GET LOST, THEY MUST ALWAYS FIND THEIR WAY BACK HOME`
 },
 {
   id: 66,
   title: 'Love Connection',
   price: 2500,
-  images: ['82.jpeg'],
+  images: ['love.jpeg'],
   description: `YOU MAKE FIRE, WHEN THE FIRE TURNS INTO BURNING COALS, TAKE A PHOTO OF THE PERSON YOU WANT TO CONNECT WITH. POUR 1/3 OF THE MEDICINE ONTO THE PHOTO THEN PLACE THE PHOTO ONTO THE THE BURNING COAL THEN HIT EVERYTHING WITH A STICK WHILE TELLING THE MEDICINE WHAT YOU WANT FROM IT. BE CAREFUL YOU DO NOT BURN YOURSELF. YOU DO THIS FOR 3 DAYS, THE MEDICINE SHOULD FINISH ON THE 3RD DAY. YOUR HEART MUST BE WHERE YOU MIND IS..`
 },
 {
   id: 67,
   title: 'Isipoko',
   price: 15000,
-  images: ['83.jpeg'],
+  images: ['sk67.jpeg'],
   description: `THIS MEDICINE IS FOR BUSINESS OWNERS. TAKE OFF ALL YOUR CLOTHES AT MIDNIGHT. POUR A TEASPOON OF THE MEDICINE AND A TEASPOON OF A MAIZE MEAL MIX AND PLACE THE MIXTURE ONTO A BURNING COAL OUTSIDE THE HOUSE IN THE YARD. SPEAK WHATEVER YOU WANT TO SEE HAPPENING WITH AND ON YOUR BUSINESS. YOU LEAVE EVERYTHING THERE AND YOU INSIDE THE HOUSE.`
 },
 
@@ -981,8 +1352,8 @@ IF YOU SUFFER FROM AN UNBEARABLE HEADACHE CONSISTANTLY. MKHULU NDABEZITHA WILL B
 {
   id: 68,
   title: 'BHEKA MINA NGEDWA',
-  price: 0,
-  images: ['85.jpeg'],
+  price: 15,
+  images: ['bheka.jpeg'],
   description: `(Amafutha okugcobisa umzimba)
 
 * Amafutha anamandla
@@ -996,8 +1367,8 @@ Rub your face and all over your body.`
 {
   id: 69,
   title: 'IMPINDA MSHAYE (Amafutha)',
-  price: 0,
-  images: ['86.jpeg'],
+  price: 15,
+  images: ['phinda.jpeg'],
   description: `* Ziphindisele kubantu abalwe nawe ibalimaze
 
 INSTRUCTIONS:
@@ -1006,8 +1377,8 @@ Rub your face and all over the body.`
 {
   id: 70,
   title: 'INHLANHLA YEMALI (Amafutha)',
-  price: 0,
-  images: ['88.jpeg'],
+  price: 15,
+  images: ['yell.jpeg'],
   description: `* Makhasi
 * ⁠Mahashi
 * ⁠Lotto
@@ -1021,7 +1392,7 @@ Rub your face and all over your body.`
   id: 71,
   title: 'SIGILA BATHAKATHI (Amafutha)',
   price: 0,
-  images: ['81.jpeg'],
+  images: ['sk65.jpeg'],
   description: `* Ilwa abathakathi,
 * ⁠Imimoya emdaka,
 * ⁠Ibizwa mpinda mshaye`
@@ -1029,8 +1400,8 @@ Rub your face and all over your body.`
 {
   id: 72,
   title: 'AMAFUTHA ENHLANHLA',
-  price: 0,
-  images: ['89.jpeg'],
+  price: 15,
+  images: ['amafu.jpeg'],
   description: `* Amafutha wenhlanhla
 * ⁠Geza umzimba
 * ⁠Thambisa
@@ -1042,8 +1413,8 @@ Seek medical advice if irritation occurs`
 {
   id: 73,
   title: 'ROSELINA OIL',
-  price: 0,
-  images: ['90.jpeg'],
+  price: 15,
+  images: ['rosel.jpeg'],
   description: `* Enza ukhanye
 * ⁠Thandeka njenge mbali ye-Roselina
 
@@ -1053,8 +1424,8 @@ Rub your face and all over your body`
 {
   id: 74,
   title: 'MPUKANE',
-  price: 0,
-  images: ['92.jpeg'],
+  price: 15,
+  images: ['mpukane.jpeg'],
   description: `UMA UFUNA:
 * Ezwe wena
 * ⁠Ukulandelwa
@@ -1067,18 +1438,123 @@ Rub your face and all over your body.`
 {
   id: 75,
   title: 'NKOSAZANE',
-  price: 0,
-  images: ['91.jpeg'],
+  price: 15,
+  images: ['nkosa.jpeg'],
   description: `* Enza uthandeke
 * ⁠Ube nenhlanhla yemali
 
 INSTRUCTIONS:
 Geza uphinde ugcobe ngawo lamafuth`
 },
-
+{
+id: 76,
+title: 'Khuluma ukhululeke',
+price: 20,
+images: ['423.jpeg'],
+description: `--`
+}
 
     ];
+    let isFirstTimeDiscountEligible = false;
+
+    window.onload = function() {
+    const nav = document.getElementById('main-nav');
+
+    // Ask the server if we are logged in
+    fetch('check_session.php')
+    .then(response => response.json())
+    .then(data => {
+        if (data.loggedIn) {
+            // Update nav to show "Welcome Name" and "Sign Out"
+            nav.innerHTML = `
+    <a href="#catalog">Catalog</a>
+    <a href="#contact">Contact</a>
+    <span style="color: #ff4d4d; font-weight: bold;">Welcome, ${data.userName}</span>
+    <a href="logout.php" style="
+        text-decoration: none; 
+        color: #888; 
+        font-size: 12px; 
+        border: 1px solid #444; 
+        padding: 4px 10px; 
+        border-radius: 4px;
+        margin-left: 10px;
+    ">Sign Out</a>
+`;
+        }
+    })
+    .catch(error => console.error('Error checking session:', error));
+};
+
+    function togglePasswordVisibility(btn) {
+  // Find the input field relative to the clicked 'SHOW' text
+  const input = btn.parentElement.querySelector('input');
   
+  if (input.type === "password") {
+    input.type = "text";
+    btn.innerText = "HIDE";
+    btn.style.color = "#ff4d4d"; // Turn red when showing
+  } else {
+    input.type = "password";
+    btn.innerText = "SHOW";
+    btn.style.color = "#888";
+  }
+}
+    
+    function toggleLogin() {
+  const modal = document.getElementById('loginModal');
+  const isOpening = modal.style.display !== 'flex';
+  
+  modal.style.display = isOpening ? 'flex' : 'none';
+  
+  // Reset to Login view every time it opens
+  if (isOpening) switchForm('login');
+}
+
+function switchForm(type) {
+  const loginForm = document.getElementById('loginForm');
+  const signupForm = document.getElementById('signupForm');
+  const title = document.getElementById('modalTitle');
+  const subtitle = document.getElementById('modalSubtitle');
+
+  if (type === 'signup') {
+    loginForm.style.display = 'none';
+    signupForm.style.display = 'block';
+    title.innerText = "Create Account";
+    subtitle.innerText = "Join the YamaCala community";
+  } else {
+    loginForm.style.display = 'block';
+    signupForm.style.display = 'none';
+    title.innerText = "Welcome Back";
+    subtitle.innerText = "Sign in to your account";
+  }
+}
+function submitLogin() {
+    const form = document.getElementById('loginForm');
+    const formData = new FormData(form);
+
+    fetch('login.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        if (data.trim() === "success") {
+            // This reload triggers window.onload to show the "Welcome" message
+            location.reload(); 
+        } else {
+            alert("Invalid credentials.");
+        }
+    });
+}
+
+function closeLogin(event) {
+  if (event.target.id === 'loginModal') toggleLogin();
+}
+
+// Closes modal if user clicks outside the box
+function closeLogin(event) {
+  if (event.target.id === 'loginModal') toggleLogin();
+}
     // --- Utility Functions ---
   
     function findProduct(id) {
@@ -1308,23 +1784,33 @@ function doSearch() {
 }
     // --- Checkout Modal Functions ---
   
-    function checkout() {
-      const itemCount = Object.keys(CART).length;
-      
-      if (itemCount === 0) {
-          alert("Your cart is empty! Please add some items before checking out.");
-          return;
-      }
-      
-      openCheckoutModal();
-      
-      // Uncheck all delivery options initially
-      document.querySelectorAll('input[name="deliveryMethod"]').forEach(radio => radio.checked = false);
-      
-      // Set total display to subtotal (0 delivery fee)
-      updateModalTotal(0); 
+    async function checkout() {
+    const itemCount = Object.keys(CART).length;
+    
+    if (itemCount === 0) {
+        alert("Your cart is empty! Please add some items before checking out.");
+        return;
     }
-  
+
+    // Check if user is logged in before proceeding
+    const response = await fetch('check_session.php');
+    const session = await response.json();
+
+    if (!session.loggedIn) {
+        alert("Please log in or create an account to proceed with your order.");
+        toggleLogin(); // Opens the login/signup modal you created
+        return;
+    }
+
+    // If logged in, proceed to checkout
+    openCheckoutModal();
+    
+    // Uncheck all delivery options initially
+    document.querySelectorAll('input[name="deliveryMethod"]').forEach(radio => radio.checked = false);
+    
+    // Set total display to subtotal
+    updateModalTotal(0); 
+}
     function openCheckoutModal() {
       checkoutModal.style.display = 'block';
       
@@ -1340,17 +1826,51 @@ function doSearch() {
     function closeCheckoutModal() {
       checkoutModal.style.display = 'none';
     }
+    document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+    e.preventDefault(); // Stop page from refreshing
     
+    // 1. Double check the total on the frontend
+    const subTotal = parseFloat(checkoutModal.dataset.subtotal || 0);
+    let finalAmount = subTotal;
+    
+    if (subTotal >= 1000 && isFirstTimeDiscountEligible) {
+        finalAmount = subTotal * 0.95; // Apply 5% discount
+    }
+
+    // 2. Collect the form data
+    const orderData = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        address: document.getElementById('addressLine1').value,
+        total: finalAmount,
+        discountApplied: (subTotal >= 1000 && isFirstTimeDiscountEligible)
+    };
+
+    // 3. Send to WhatsApp or your PHP backend
+    processOrder(orderData);
+});
     // This function dynamically calculates and updates the total based on the selected delivery fee.
     function updateModalTotal(deliveryFee) {
-      // Get the base cart subtotal from the stored data attribute
-      const subTotal = parseFloat(checkoutModal.dataset.subtotal || 0); 
-      
-      const totalWithDelivery = subTotal + deliveryFee;
-      const totalElement = document.getElementById('modalTotalAmt');
-      
-      totalElement.textContent = `R ${totalWithDelivery.toFixed(2)}`;
+    const subTotal = parseFloat(checkoutModal.dataset.subtotal || 0); 
+    let discount = 0;
+    
+    // CRITICAL: Check the global variable we set during window.onload
+    if (subTotal >= 1000 && isFirstTimeDiscountEligible) {
+        discount = subTotal * 0.05;
     }
+
+    const finalTotal = (subTotal - discount) + deliveryFee;
+    const totalElement = document.getElementById('modalTotalAmt');
+
+    if (discount > 0) {
+        totalElement.innerHTML = `
+            <span style="text-decoration: line-through; color: #888; font-size: 0.8em;">R ${(subTotal + deliveryFee).toFixed(2)}</span><br>
+            R ${finalTotal.toFixed(2)} <small style="color: #4CAF50;">(5% First-Purchase Discount!)</small>
+        `;
+    } else {
+        totalElement.innerText = `R ${finalTotal.toFixed(2)}`;
+    }
+}
   
     // --- Event Listeners and Initial Setup ---
   
@@ -1362,66 +1882,76 @@ function doSearch() {
     }
     
     document.addEventListener('DOMContentLoaded', () => {
-      
-      // 1. Delivery Radio Button Change Listener
-      // Uses the globally declared 'deliveryRadios' (fixing the SyntaxError)
-      deliveryRadios.forEach(radio => {
-        radio.addEventListener('change', (event) => {
-          // Get the price from the data-price attribute
-          const deliveryPrice = parseFloat(event.target.dataset.price);
-          updateModalTotal(deliveryPrice);
-        });
-      });
-  
-      // 2. Yoco Checkout Form Submission
-      checkoutForm.addEventListener('submit', function(e){
-        e.preventDefault();
-  
-        // Read the final calculated total from the display element
-        const finalTotalText = document.getElementById('modalTotalAmt').textContent;
-        const finalTotalRands = parseFloat(finalTotalText.replace('R ', '')); 
-        
-        // Basic validation
-        if (isNaN(finalTotalRands) || finalTotalRands <= 2) {
-            alert("Please ensure you have items in your cart and selected a delivery method.");
-            return;
-        }
-  
-        // Yoco requires amount in cents
-        const totalAmountInCents = Math.round(finalTotalRands * 100); 
-        
-        // Get customer details
-        const customerName = document.getElementById('name').value + " " + document.getElementById('surname').value;
-        const customerEmail = document.getElementById('email').value;
-  
-        // Create Yoco SDK instance
-        const yoco = new YocoSDK({
-          publicKey: 'YOUR_YOCO_PUBLIC_KEY' // Replace with your Yoco public key
-        });
-  
-        yoco.showPopup({
-          amountInCents: totalAmountInCents,
-          currency: 'ZAR',
-          name: 'Order Payment',
-          description: 'Payment for your InyangaYamaCala order',
-          email: customerEmail,
-          onSuccess: function(result) {
-            alert('Payment Successful! Payment ID: ' + result.id);
-            // TODO: Call your backend here to save order details and confirm payment
-            closeCheckoutModal();
-          },
-          onError: function(error) {
-            alert('Payment failed: ' + error.message);
-          }
-        });
-        
-        // Close modal immediately after starting the popup process (optional)
-        closeCheckoutModal();
-  
-      });
-  
-    });
     
+    // 1. Delivery Radio Button Change Listener
+    deliveryRadios.forEach(radio => {
+      radio.addEventListener('change', (event) => {
+        const deliveryPrice = parseFloat(event.target.dataset.price);
+        updateModalTotal(deliveryPrice);
+      });
+    });
+
+    // 2. PayFast Checkout Form Submission
+    checkoutForm.addEventListener('submit', function(e){
+      e.preventDefault();
+
+      // Read the final calculated total from the display element
+      const finalTotalText = document.getElementById('modalTotalAmt').textContent;
+      const finalTotalRands = parseFloat(finalTotalText.replace('R ', '')); 
+      
+      // Basic validation
+      if (isNaN(finalTotalRands) || finalTotalRands <= 2) {
+          alert("Please ensure you have items in your cart and selected a delivery method.");
+          return;
+      }
+
+      // PayFast uses Rands (not cents), but formatted to 2 decimal places
+      const totalAmount = finalTotalRands.toFixed(2);
+      
+      // Get customer details
+      const firstName = document.getElementById('name').value;
+      const lastName = document.getElementById('surname').value;
+      const customerEmail = document.getElementById('email').value;
+
+      // PayFast Configuration
+      // Replace '12345678' with your actual PayFast Merchant ID/Key
+      const payfastData = {
+          merchant_id: '34140769', 
+          merchant_key: 'uyqzhijvgpf7d',
+          amount: totalAmount,
+          item_name: 'Order Payment: InyangaYamaCala',
+          name_first: firstName,
+          name_last: lastName,
+          email_address: customerEmail,
+          m_payment_id: 'ORDER_' + Date.now(), // Unique ID for your tracking
+          return_url: window.location.origin + '/success.html',
+          cancel_url: window.location.origin + '/cancel.html',
+          notify_url: 'https://your-backend-api.com/payfast-webhook' // Important for backend confirmation
+      };
+
+      // Create a hidden form and submit it to PayFast
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = 'https://www.payfast.co.za/eng/process'; // Use 'https://sandbox.payfast.co.za/eng/process' for testing
+
+      for (const key in payfastData) {
+          if (payfastData.hasOwnProperty(key)) {
+              const hiddenField = document.createElement('input');
+              hiddenField.type = 'hidden';
+              hiddenField.name = key;
+              hiddenField.value = payfastData[key];
+              form.appendChild(hiddenField);
+          }
+      }
+
+      document.body.appendChild(form);
+      form.submit();
+      
+      // Close modal (optional since page will redirect)
+      closeCheckoutModal();
+    });
+
+});
     // Initial render
     renderProducts();
   </script>
